@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
@@ -19,6 +20,7 @@ class SddContext {
     required this.out,
     required this.err,
     required this.interactive,
+    this.readStdin = _noStdin,
   });
 
   /// Contexto real do processo.
@@ -32,7 +34,10 @@ class SddContext {
     out: io.stdout,
     err: io.stderr,
     interactive: io.stdin.hasTerminal,
+    readStdin: () => io.stdin.transform(utf8.decoder).join(),
   );
+
+  static Future<String> _noStdin() async => '';
 
   final FileSystem fs;
   final ProcessRunner processRunner;
@@ -45,6 +50,9 @@ class SddContext {
 
   /// Se é possível fazer perguntas ao usuário (stdin é um terminal).
   final bool interactive;
+
+  /// Lê todo o stdin (payload JSON dos hooks).
+  final Future<String> Function() readStdin;
 
   KitLocator get kitLocator =>
       KitLocator(fs: fs, environment: environment, packageRoot: packageRoot);

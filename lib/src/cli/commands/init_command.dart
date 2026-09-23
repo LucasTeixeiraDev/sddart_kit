@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_sdd/src/cli/sdd_command.dart';
+import 'package:flutter_sdd/src/cli/sync_runner.dart';
 import 'package:flutter_sdd/src/core/config/config_issue.dart';
 import 'package:flutter_sdd/src/core/config/sdd_config.dart';
 import 'package:flutter_sdd/src/core/kit/kit_locator.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_sdd/src/core/project/initializer.dart';
 import 'package:flutter_sdd/src/core/project/project_info.dart';
 import 'package:flutter_sdd/src/core/project/sdd_paths.dart';
 import 'package:flutter_sdd/src/infra/exit_codes.dart';
+import 'package:flutter_sdd/src/infra/logger.dart';
 import 'package:flutter_sdd/src/version.dart';
 import 'package:path/path.dart' as p;
 
@@ -104,27 +106,43 @@ class InitCommand extends SddCommand {
       return ExitCodes.usage;
     }
 
+    Future<int> sync(Logger syncLogger) => runSync(
+      context,
+      syncLogger,
+      check: false,
+      json: false,
+      kitPath: kitPath,
+    );
+
     if (jsonOutput) {
+      // O documento do init é a saída; o sync fica silencioso.
+      final syncCode = await sync(
+        Logger(out: StringBuffer(), err: context.err),
+      );
       logger.json({
+        'sync_ok': syncCode == ExitCodes.ok,
         'stack': stack.name,
         'targets': [for (final t in targets) t.name],
         'created': result.created,
         'skipped': result.skipped,
         'notes': proposal.notes,
       });
-    } else {
-      proposal.notes.forEach(logger.warn);
-      final targetNames = targets.map((t) => t.name).join(', ');
-      logger.info('stack ${stack.name} · targets $targetNames');
-      for (final f in result.created) {
-        logger.info('criado    $f');
-      }
-      for (final f in result.skipped) {
-        logger.info('mantido   $f');
-      }
-      logger.info('próximo passo: sdd sync');
+      return syncCode;
     }
-    return ExitCodes.ok;
+    proposal.notes.forEach(logger.warn);
+    final targetNames = targets.map((t) => t.name).join(', ');
+    logger.info('stack ${stack.name} · targets $targetNames');
+    for (final f in result.created) {
+      logger.info('criado    $f');
+    }
+    for (final f in result.skipped) {
+      logger.info('mantido   $f');
+    }
+    final syncCode = await sync(logger);
+    if (syncCode == ExitCodes.ok) {
+      logger.info('próximo passo: sdd new "<título>"');
+    }
+    return syncCode;
   }
 
   StackDefinition? _chooseStack(

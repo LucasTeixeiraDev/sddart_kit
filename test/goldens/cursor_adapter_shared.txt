@@ -1,0 +1,51 @@
+=== .cursor/agents/sdd-judge.md ===
+---
+name: sdd-judge
+description: "Revisa sem alterar."
+model: claude-opus-5-5
+readonly: true
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Revise.
+
+=== .cursor/agents/sdd-worker-deep.md ===
+---
+name: sdd-worker-deep
+description: "Executa uma tarefa. (tier deep)"
+model: claude-opus-5-5
+readonly: false
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Trabalhe em lib.
+
+=== .cursor/agents/sdd-worker-fast.md ===
+---
+name: sdd-worker-fast
+description: "Executa uma tarefa. (tier fast)"
+model: inherit
+readonly: false
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Trabalhe em lib.
+
+=== .cursor/rules/sdd-always.mdc ===
+---
+description: "Sempre vale."
+alwaysApply: true
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Seja breve.
+
+=== .cursor/rules/sdd-domain.mdc ===
+---
+description: "Camada de domain."
+globs: "lib/**/domain/**, test/**/domain/**"
+alwaysApply: false
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Sem Flutter no domain.

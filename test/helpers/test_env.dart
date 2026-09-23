@@ -27,10 +27,17 @@ void copyIntoMemory(String from, FileSystem fs, String to) {
   }
 }
 
-/// FileSystem em memória com o kit real e (opcionalmente) uma fixture.
-MemoryFileSystem memoryFs({String? fixture}) {
+/// FileSystem em memória com o kit (real ou uma fixture de kit) e,
+/// opcionalmente, uma fixture de projeto.
+MemoryFileSystem memoryFs({String? fixture, String? kitFixture}) {
   final fs = MemoryFileSystem();
-  copyIntoMemory(p.join(repoRoot, 'kit'), fs, memKitPath);
+  copyIntoMemory(
+    kitFixture == null
+        ? p.join(repoRoot, 'kit')
+        : p.join(repoRoot, 'test', 'fixtures', kitFixture),
+    fs,
+    memKitPath,
+  );
   fs.directory(memProjectPath).createSync(recursive: true);
   if (fixture != null) {
     copyIntoMemory(

@@ -111,3 +111,38 @@ falha; CLI mais novo ou kit alterado = aviso "rode sdd sync".
 ## D-015 · Branch de desenvolvimento (2026-09)
 **Decisão:** commits dos milestones na branch `feat/flutter-sdd`, e não direto na main.
 **Origem:** M1.
+
+## D-016 · Conteúdo do kit com variáveis `{{sdd:chave}}` (2026-09)
+**Decisão:** corpos do kit podem usar `{{sdd:chave}}` (config e listas calculadas, ex.:
+`gates_list`, `commands_list`, `dod_checklist`). Variável desconhecida = erro no sync.
+**Motivo:** o kit fica genérico e o texto gerado reflete o config do projeto. O prefixo `sdd:`
+evita conflito com o `{{ }}` dos bricks mason.
+**Origem:** M2.
+
+## D-017 · Hooks implementados pelo próprio CLI (2026-09)
+**Decisão:** `sdd hook format` (format-on-edit) e `sdd hook guard-bash --allow ...` (reviewer)
+leem o payload JSON do stdin; os arquivos gerados só chamam `sdd`.
+O guard bloqueia encadeamento/redirecionamento (`; & | > < $(` e crase).
+**Motivo:** sem dependência de `jq` ou scripts shell, testável e igual nas duas ferramentas.
+**Origem:** M2 (realiza D-008 e D-012).
+
+## D-018 · Identificação de arquivos gerados (2026-09)
+**Decisão:** aviso no arquivo (markdown) + manifesto `.sdd/generated.json`. Um arquivo só é
+sobrescrito ou removido se tiver o aviso (ou, sem suporte a comentário, estiver no manifesto).
+Arquivo do usuário no caminho de um gerado vira **conflito** (não escrito; exit 1).
+Órfãos são procurados no manifesto e em `.claude|.cursor/{agents,skills,rules}`.
+**Origem:** M2.
+
+## D-019 · Resolução de camadas do kit (2026-09)
+**Decisão:** core → stack → `.sdd/overrides/`. Item de mesmo nome substitui por inteiro (skill
+inclui arquivos de apoio); `disabled: true` remove. Templates por caminho relativo.
+Canônico sem prefixo; o prefixo `sdd-` é aplicado na geração.
+**Pendência (M5):** stacks precisam acrescentar skills a agentes do core (ex.: implementer
+com `result-failure`) sem copiar o agente inteiro.
+**Origem:** M2.
+
+## D-020 · Texto dos comandos independente de ferramenta (2026-09)
+**Decisão:** comandos não usam `$ARGUMENTS`; o corpo diz "o argumento após o comando é...".
+**Pendência:** confirmar que o Claude Code anexa os argumentos quando o corpo não usa
+`$ARGUMENTS`; se não anexar, o adapter do Claude injeta a linha.
+**Origem:** M2.

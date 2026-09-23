@@ -18,13 +18,16 @@ Legenda: [x] feito · [ ] pendente. Detalhes das decisões em `decisions.md`.
 - [x] Fixtures `app_cubit`, `app_plain_dart`, `app_no_features`; 65 testes; cobertura de `lib/src/core/` 98%
 - [x] `dart compile exe` compila e roda (com `SDD_KIT_PATH`)
 
-## M2 — Kit core + sync
-- [ ] Modelo canônico (agent, skill, rule, command, template) + camadas kit/overrides
-- [ ] `ClaudeAdapter` e `CursorAdapter` (goldens), variantes de tier, prefixo `sdd-`
-- [ ] Comandos como skills manuais (D-003); hooks de agente do reviewer (D-008)
-- [ ] AGENTS.md gerenciado, CLAUDE.md com `@AGENTS.md`, cabeçalhos, manifesto e órfãos
-- [ ] `sdd sync [--check]` idempotente; `init` chama `sync`; doctor checa "sync em dia"
-- [ ] Kit core inicial; `docs/adapters.md` completo
+## M2 — Kit core + sync ✅
+- [x] Modelo canônico (agent, skill, rule, command, template), frontmatter e camadas core → stack → overrides (D-019)
+- [x] Variáveis `{{sdd:chave}}` no conteúdo do kit (D-016)
+- [x] `ClaudeAdapter` e `CursorAdapter` com goldens; variantes de tier; prefixo `sdd-`; modelos por ferramenta
+- [x] Comandos como skills manuais (D-003); hook `PreToolUse` do reviewer via `sdd hook guard-bash` (D-008, D-017)
+- [x] AGENTS.md gerenciado, CLAUDE.md com `@AGENTS.md`, avisos, manifesto, órfãos, conflitos (D-018)
+- [x] Hooks de format-on-edit com merge em JSON do usuário (D-012)
+- [x] `sdd sync [--check]` idempotente; `init` chama `sync`; `doctor` checa sync e `sdd` no PATH
+- [x] Kit core inicial: 6 agentes, 8 comandos, 5 skills, 1 rule, templates
+- [x] `docs/adapters.md` completo; 119 testes; cobertura de `lib/src/core/` 98%
 
 ## M3 — Specs e tarefas
 - [ ] `sdd new`, `tasks validate|graph|next`, `status`, `status set` (lock + escrita atômica)

@@ -13,7 +13,9 @@ void main() {
       final cli = CliHarness(fixture: 'app_cubit');
       expect(await cli.run(['init', '--yes']), ExitCodes.ok);
       expect(cli.out.toString(), contains('stack flutter-clean-cubit'));
-      expect(cli.out.toString(), contains('próximo passo: sdd sync'));
+      expect(cli.out.toString(), contains('próximo passo: sdd new'));
+      expect(cli.exists('AGENTS.md'), isTrue);
+      expect(cli.exists('.claude/agents/sdd-reviewer.md'), isTrue);
 
       final config = parseConfig(cli.read('.sdd/config.yaml')).config;
       expect(config.stack, 'flutter-clean-cubit');

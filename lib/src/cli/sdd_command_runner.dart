@@ -1,7 +1,9 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:flutter_sdd/src/cli/commands/doctor_command.dart';
+import 'package:flutter_sdd/src/cli/commands/hook_command.dart';
 import 'package:flutter_sdd/src/cli/commands/init_command.dart';
+import 'package:flutter_sdd/src/cli/commands/sync_command.dart';
 import 'package:flutter_sdd/src/cli/sdd_context.dart';
 import 'package:flutter_sdd/src/infra/exit_codes.dart';
 import 'package:flutter_sdd/src/version.dart';
@@ -20,7 +22,9 @@ class SddCommandRunner extends CommandRunner<int> {
         help: 'Diretório do kit (senão SDD_KIT_PATH ou o pacote).',
       );
     addCommand(InitCommand(context));
+    addCommand(SyncCommand(context));
     addCommand(DoctorCommand(context));
+    addCommand(HookCommand(context));
   }
 
   final SddContext context;

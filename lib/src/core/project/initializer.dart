@@ -67,6 +67,7 @@ InitProposal proposeConfig({
     'memory': merged['memory'],
     'models': merged['models'],
     'hooks': merged['hooks'],
+    'adapters': merged['adapters'],
   };
   return InitProposal(config, notes);
 }

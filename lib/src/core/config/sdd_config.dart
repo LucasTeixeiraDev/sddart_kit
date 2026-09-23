@@ -90,6 +90,33 @@ class ExecutionConfig {
   final Tier escalateTo;
 }
 
+/// Como o Cursor recebe skills e agentes (ver docs/adapters.md).
+enum CursorSkills {
+  /// Usa `.claude/skills/`, que o Cursor também lê (quando claude é target).
+  shared,
+
+  /// Gera cópia própria em `.cursor/skills/`.
+  own,
+}
+
+enum CursorAgents {
+  /// Gera `.cursor/agents/` com `model` e `readonly` próprios.
+  own,
+
+  /// Usa apenas `.claude/agents/` (quando claude é target).
+  shared,
+}
+
+class AdaptersConfig {
+  const AdaptersConfig({
+    this.cursorSkills = CursorSkills.shared,
+    this.cursorAgents = CursorAgents.own,
+  });
+
+  final CursorSkills cursorSkills;
+  final CursorAgents cursorAgents;
+}
+
 class HooksConfig {
   const HooksConfig({required this.formatOnEdit});
 
@@ -110,6 +137,7 @@ class SddConfig {
     required this.learningsWarnAfter,
     required this.models,
     required this.hooks,
+    this.adapters = const AdaptersConfig(),
   });
 
   static const currentVersion = 1;
@@ -131,4 +159,7 @@ class SddConfig {
   final int learningsWarnAfter;
   final Map<Tier, ModelMapping> models;
   final HooksConfig hooks;
+  final AdaptersConfig adapters;
+
+  bool hasTarget(Target target) => targets.contains(target);
 }

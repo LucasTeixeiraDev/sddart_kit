@@ -4,7 +4,9 @@ import 'package:flutter_sdd/src/core/config/config_parser.dart';
 import 'package:flutter_sdd/src/core/config/model_resolver.dart';
 import 'package:flutter_sdd/src/core/kit/kit_locator.dart';
 import 'package:flutter_sdd/src/core/kit/kit_lock.dart';
+import 'package:flutter_sdd/src/core/kit/kit_model.dart';
 import 'package:flutter_sdd/src/core/kit/stack_definition.dart';
+import 'package:flutter_sdd/src/core/project/project_loader.dart';
 import 'package:flutter_sdd/src/core/project/sdd_paths.dart';
 import 'package:flutter_sdd/src/infra/process_runner.dart';
 
@@ -111,8 +113,49 @@ class Doctor {
       ]);
     }
 
-    checks.add(_lock(paths, kit, stack.name));
+    checks
+      ..add(_lock(paths, kit, stack.name))
+      ..add(await _sdd());
+    if (checks.every((c) => c.status != CheckStatus.fail)) {
+      checks.add(await _sync(root, kitPath));
+    }
     return checks;
+  }
+
+  /// Hooks gerados (format, guard do reviewer) chamam `sdd` pelo PATH.
+  Future<DoctorCheck> _sdd() async {
+    final result = await processRunner.run('sdd', ['--version']);
+    return result.ok
+        ? DoctorCheck('sdd', CheckStatus.ok, result.stdout.trim())
+        : const DoctorCheck(
+            'sdd',
+            CheckStatus.warn,
+            'sdd fora do PATH; hooks gerados não vão rodar '
+                '(dart pub global activate)',
+          );
+  }
+
+  Future<DoctorCheck> _sync(String root, String? kitPath) async {
+    try {
+      final project = await loadProject(
+        fs: fs,
+        root: root,
+        locator: kitLocator,
+        kitPath: kitPath,
+      );
+      final plan = project.planSync(fs, cliVersion);
+      return plan.upToDate
+          ? const DoctorCheck('sync', CheckStatus.ok, 'em dia')
+          : DoctorCheck(
+              'sync',
+              CheckStatus.warn,
+              '${plan.changes.length} mudanças pendentes; rode sdd sync',
+            );
+    } on KitException catch (e) {
+      return DoctorCheck('sync', CheckStatus.fail, 'kit/overrides: $e');
+    } on ProjectLoadException catch (e) {
+      return DoctorCheck('sync', CheckStatus.fail, e.message);
+    }
   }
 
   DoctorCheck _lock(SddPaths paths, KitLocation kit, String stack) {

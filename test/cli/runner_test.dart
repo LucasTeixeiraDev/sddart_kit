@@ -37,6 +37,24 @@ void main() {
       expect(out, contains('0 falhas · 0 avisos'));
     });
 
+    test('sync pendente, sdd fora do PATH e kit inválido', () async {
+      final runner = FakeProcessRunner({
+        'sdd --version': const ProcessOutput(ProcessOutput.notFound),
+      });
+      final cli = CliHarness(fixture: 'app_cubit', processRunner: runner);
+      await cli.run(['init', '-y']);
+      cli.fs.file('$memProjectPath/AGENTS.md').deleteSync();
+      expect(await cli.run(['doctor']), ExitCodes.ok);
+      expect(cli.out.toString(), contains('WARN sync      1 mudanças'));
+      expect(cli.out.toString(), contains('WARN sdd       sdd fora do PATH'));
+
+      cli.fs.file('$memProjectPath/.sdd/overrides/agents/x.md')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('---\n---\n');
+      expect(await cli.run(['doctor']), ExitCodes.failure);
+      expect(cli.out.toString(), contains('FAIL sync      kit/overrides'));
+    });
+
     test('--json e falhas retornam exit 1', () async {
       final runner = FakeProcessRunner({
         'flutter': const ProcessOutput(ProcessOutput.notFound),

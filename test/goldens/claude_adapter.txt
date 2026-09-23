@@ -1,0 +1,82 @@
+=== .claude/agents/sdd-judge.md ===
+---
+name: sdd-judge
+description: "Revisa sem alterar."
+tools: [Read, Bash]
+model: opus
+hooks:
+  PreToolUse:
+    - matcher: Bash
+      hooks:
+        - type: command
+          command: "sdd hook guard-bash --allow 'sdd check'"
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Revise.
+
+=== .claude/agents/sdd-worker-deep.md ===
+---
+name: sdd-worker-deep
+description: "Executa uma tarefa. (tier deep)"
+tools: [Read, Grep, Glob, Edit, Write, Bash]
+model: opus
+skills: [sdd-writing]
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Trabalhe em lib.
+
+=== .claude/agents/sdd-worker-fast.md ===
+---
+name: sdd-worker-fast
+description: "Executa uma tarefa. (tier fast)"
+tools: [Read, Grep, Glob, Edit, Write, Bash]
+model: haiku
+skills: [sdd-writing]
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Trabalhe em lib.
+
+=== .claude/rules/sdd-always.md ===
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Seja breve.
+
+=== .claude/rules/sdd-domain.md ===
+---
+paths: ["lib/**/domain/**", "test/**/domain/**"]
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Sem Flutter no domain.
+
+=== .claude/skills/sdd-go/SKILL.md ===
+---
+name: sdd-go
+description: "Roda o fluxo."
+argument-hint: "<spec>"
+disable-model-invocation: true
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Rode tudo.
+
+=== .claude/skills/sdd-writing/SKILL.md ===
+---
+name: sdd-writing
+description: "Como escrever."
+---
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Escreva bem. Tentativas: 2.
+
+=== .claude/skills/sdd-writing/references/guide.md ===
+<!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
+
+Guia da stack sample.
+
+=== .claude/skills/sdd-writing/run.sh ===
+#!/bin/sh
+echo ok

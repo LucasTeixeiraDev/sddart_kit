@@ -86,8 +86,11 @@ class _ConfigReader {
       'memory',
       'models',
       'hooks',
+      'adapters',
     },
     'kit': {'stack'},
+    'adapters': {'cursor'},
+    'adapters.cursor': {'skills', 'agents'},
     'project': {
       'features_path',
       'test_path',
@@ -128,6 +131,8 @@ class _ConfigReader {
     final learningsWarnAfter = _int('memory.learnings_warn_after', min: 1);
     final models = _models();
     final formatOnEdit = _bool('hooks.format_on_edit');
+    final cursorSkills = _enum('adapters.cursor.skills', CursorSkills.values);
+    final cursorAgents = _enum('adapters.cursor.agents', CursorAgents.values);
 
     if (errors.isNotEmpty) throw ConfigException(errors);
     return ConfigParseResult(
@@ -143,6 +148,10 @@ class _ConfigReader {
         learningsWarnAfter: learningsWarnAfter!,
         models: models!,
         hooks: HooksConfig(formatOnEdit: formatOnEdit!),
+        adapters: AdaptersConfig(
+          cursorSkills: cursorSkills!,
+          cursorAgents: cursorAgents!,
+        ),
       ),
       warnings,
     );
