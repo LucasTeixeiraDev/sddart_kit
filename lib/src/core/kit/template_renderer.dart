@@ -31,6 +31,11 @@ Map<String, String> buildRenderVars(
   final commands = config.commands;
   return {
     'version': sddVersion,
+    // Pasta de skills que todas as ferramentas configuradas leem (o Cursor
+    // também lê .claude/skills/).
+    'skills_dir': config.hasTarget(Target.claude)
+        ? '.claude/skills'
+        : '.cursor/skills',
     'stack': config.stack,
     'project.features_path': config.project.featuresPath,
     'project.test_path': config.project.testPath,

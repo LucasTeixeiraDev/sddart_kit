@@ -66,6 +66,9 @@ Tools abstratas → Claude: `read`→Read, `search`→Grep+Glob, `edit`→Edit, 
   com `model`/`readonly` próprios; `shared` depende de `.claude/agents/`. Sem `claude` nos
   targets, sempre `own`.
 - **Argumentos dos comandos:** o corpo usa texto neutro ("o argumento após o comando é...")
-  porque o Cursor não substitui `$ARGUMENTS`. Pendente verificar se o Claude Code anexa os
-  argumentos quando o corpo não usa `$ARGUMENTS` (ver D-020).
+  porque o Cursor não documenta `$ARGUMENTS`. O Claude Code anexa `ARGUMENTS: <entrada>`
+  quando nenhum placeholder a recebe (verificado em 2026-10-03, D-035).
+- **Comandos não se chamam entre si:** skills com `disable-model-invocation: true` não podem
+  ser invocadas pelo modelo (o Claude Code bloqueia). O `/sdd-run` lê o `SKILL.md` de cada
+  fase com a ferramenta de leitura.
 - **Hooks chamam `sdd` pelo PATH.** O `sdd doctor` avisa se não estiver.

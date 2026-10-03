@@ -59,8 +59,14 @@ Legenda: [x] feito · [ ] pendente. Detalhes das decisões em `decisions.md`.
 - [x] Fixture `import_source` (duplicatas Claude/Cursor, layout de repositório, arquivo gerado)
 - [x] 219 testes; cobertura de `lib/src/core/` 99%
 
-## M6 — Orquestração e memória
-- [ ] Agentes e comandos finais, memória, hooks opcionais (D-012), README completo, CHANGELOG
+## M6 — Orquestração e memória ✅
+- [x] Versão final dos 8 comandos `/sdd-*` sobre os contratos do CLI (D-036)
+- [x] `/sdd-run` encadeia as fases lendo os `SKILL.md`; argumentos verificados nas docs (D-035)
+- [x] Reviewer com base do diff e lições com destino; `/sdd-close` com `pr.md` e promoção
+- [x] Hooks opcionais: format-on-edit perguntado no `init` interativo (D-037); guard do reviewer
+- [x] README completo (instalação, quickstart, referência, config, overrides, memória, hooks, CI, stack pack)
+- [x] `pub global activate --source path` validado num PUB_CACHE isolado; `dart compile exe` ok
+- [x] 220 testes; cobertura de `lib/src/core/` 99%
 
 ## M7 — Dogfooding
 - [ ] Fixture realista de ponta a ponta (também como teste de integração)

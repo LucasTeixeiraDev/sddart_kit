@@ -295,3 +295,44 @@ entre os dois modos. Itens "kit" vão para `.sdd/kit-proposals.md`, nunca para o
 **Decisão:** `kit/**` fica fora do analyzer, e o format do repo roda em `bin lib test`.
 **Motivo:** os templates dos bricks são mustache, não Dart válido.
 **Origem:** M5.
+
+## D-035 · Argumentos e encadeamento dos comandos (2026-10)
+**Decisão:**
+- **Argumentos:** os comandos mantêm o texto neutro ("o argumento após o comando é ..."),
+  sem `$ARGUMENTS`.
+- **Encadeamento:** o `/sdd-run` lê e segue `{{sdd:skills_dir}}/sdd-<fase>/SKILL.md` com a
+  ferramenta de leitura, e não usa a ferramenta de skills.
+- **Pasta de skills:** a variável `skills_dir` vale `.claude/skills` quando claude é target
+  (o Cursor também a lê); senão, `.cursor/skills`.
+
+**Motivo:** verificado em 2026-10-03 em https://code.claude.com/docs/en/skills:
+- quando nenhum placeholder recebe o argumento, o Claude Code anexa `ARGUMENTS: <entrada>`
+  ao conteúdo;
+- skills com `disable-model-invocation: true` não podem ser invocadas pelo modelo. Se ele
+  tentar, a chamada é bloqueada e ele é instruído a não reproduzir os passos de outro jeito.
+
+No Cursor, a doc não fala do texto após `/skill`; o texto neutro cobre os dois casos.
+**Origem:** M6 (resolve a pendência do D-020).
+
+## D-036 · Orquestração final (2026-10)
+**Decisão:** os `/sdd-*` se apoiam só em contratos do CLI.
+- **Loop do `/sdd-exec`:**
+  - lê os campos do `tasks next --json` (`ready[].agent`, `ready[].file`, `in_progress`,
+    `blocked`, `complete`);
+  - marca `in_progress` antes de disparar os agentes em paralelo;
+  - confirma cada tarefa com `sdd check --task --json` (`ok`, `interference`);
+  - quem bloqueia por tentativas esgotadas é o CLI;
+  - faz commit por onda na branch `sdd/<spec>`.
+- **Revisão:**
+  - `review in_progress` conta o ciclo;
+  - o orquestrador passa o commit base (`git merge-base`) ao reviewer;
+  - blockers/majors viram `Txx-fix-*` numa nova onda.
+- **Fechamento:** o `/sdd-close` escreve `specs/<spec>/pr.md` e conduz a promoção das lições
+  item a item.
+- **Gates humanos:** nunca são aprovados pelo agente sem confirmação explícita.
+**Origem:** M6.
+
+## D-037 · Hook no `init` interativo (2026-10)
+**Decisão:** o `init` interativo pergunta se o format-on-edit deve ser ligado (padrão: não).
+`--yes` mantém desligado.
+**Origem:** M6.

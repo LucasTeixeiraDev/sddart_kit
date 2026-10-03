@@ -89,9 +89,22 @@ void main() {
         interactive: true,
       );
       expect(await cli.run(['init']), ExitCodes.ok);
-      expect(prompter.asked, hasLength(2));
+      expect(prompter.asked, hasLength(3));
+      expect(prompter.asked.last, contains('dart format'));
       final config = parseConfig(cli.read('.sdd/config.yaml')).config;
       expect(config.targets.map((t) => t.name), ['claude']);
+    });
+
+    test('interativo com format-on-edit gera o hook', () async {
+      final cli = CliHarness(
+        fixture: 'app_cubit',
+        prompter: ScriptedPrompter(confirmAnswer: true),
+        interactive: true,
+      );
+      expect(await cli.run(['init']), ExitCodes.ok);
+      final config = parseConfig(cli.read('.sdd/config.yaml')).config;
+      expect(config.hooks.formatOnEdit, isTrue);
+      expect(cli.read('.claude/settings.json'), contains('sdd hook format'));
     });
 
     test('interativo sem nenhum target escolhido', () async {

@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.1.0 (em desenvolvimento)
+- M6: versão final dos comandos `/sdd-*` (exec, review, close, run), fluxo de memória,
+  pergunta de format-on-edit no `init`, README completo.
 - M5: stack pack `flutter-clean-cubit` (skills, rules, extensões de agentes, 6 bricks),
   `sdd scaffold`, `sdd import scan`, agente `importer` e `/sdd-import`.
 - M4: `sdd check` (modo tarefa e DoD completo), parsers de analyze/format/test/lcov,

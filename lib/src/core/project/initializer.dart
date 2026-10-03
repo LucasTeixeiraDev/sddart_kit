@@ -25,6 +25,7 @@ InitProposal proposeConfig({
   required ProjectInfo project,
   required List<Target> targets,
   required bool Function(String relativePath) exists,
+  bool formatOnEdit = false,
 }) {
   final notes = <String>[];
   final merged = deepMerge(coreConfigDefaults, stack.configDefaults);
@@ -66,7 +67,10 @@ InitProposal proposeConfig({
     'execution': merged['execution'],
     'memory': merged['memory'],
     'models': merged['models'],
-    'hooks': merged['hooks'],
+    'hooks': {
+      ...merged['hooks']! as Map<String, Object?>,
+      if (formatOnEdit) 'format_on_edit': true,
+    },
     'scaffold': merged['scaffold'],
     'adapters': merged['adapters'],
   };

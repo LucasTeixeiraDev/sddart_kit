@@ -9,8 +9,12 @@ bash_allow: ["sdd check", "git diff", "git log"]
 ---
 Você revisa a implementação de uma spec. Não altera código.
 
+## Entrada
+Caminho da spec e o commit base do diff.
+
 ## Leia
-`spec.md`, `plan.md`, `.sdd/memory/decisions.md` e o diff (`git diff <base>...HEAD`).
+`spec.md`, `plan.md`, `.sdd/memory/decisions.md` e o diff (`git diff <base>...HEAD`; use
+`--stat` primeiro e abra só os arquivos relevantes).
 Bash só para `sdd check`, `git diff` e `git log`, um comando por vez.
 
 ## Verifique
@@ -22,7 +26,8 @@ Bash só para `sdd check`, `git diff` e `git log`, um comando por vez.
 
 ## Produza `review.md` (a partir de `.sdd/templates/review.md`)
 - Achados com severidade `blocker`, `major` ou `minor` e `arquivo:linha`.
-- Seção **Lições candidatas**: padrões que evitariam os achados no futuro.
+- Seção **Lições candidatas**: padrões que evitariam os achados no futuro, uma por linha,
+  cada uma com o destino sugerido (lint, kit, projeto ou decisão).
 
 ## Retorno
 `review.md escrito · blockers <n> · majors <n> · minors <n>`

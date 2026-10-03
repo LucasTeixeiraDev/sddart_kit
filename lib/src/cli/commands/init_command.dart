@@ -83,12 +83,19 @@ class InitCommand extends SddCommand {
       }
       targets = [for (final c in chosen) Target.tryParse(c)!];
     }
+    final formatOnEdit =
+        ask &&
+        context.prompter.confirm(
+          'Rodar dart format automaticamente após cada edição do agente?',
+          defaultValue: false,
+        );
 
     final proposal = proposeConfig(
       stack: stack,
       project: project,
       targets: targets,
       exists: (rel) => fs.directory(p.join(root, rel)).existsSync(),
+      formatOnEdit: formatOnEdit,
     );
     final InitResult result;
     try {

@@ -25,6 +25,12 @@ void main() {
     expect(vars['commands_list'], '- `/sdd-go <spec>`: Roda o fluxo.');
     expect(vars['agents_list'], contains('`sdd-worker-<fast|deep>`'));
     expect(vars['dod_checklist'], '- (nenhum)');
+    expect(vars['skills_dir'], '.claude/skills');
+    project.writeConfig('targets: [cursor]\n');
+    expect(
+      buildRenderVars(project.config, bundle, sddVersion: '1')['skills_dir'],
+      '.cursor/skills',
+    );
     expect(vars['gates_list'], contains('`coverage` (calculado pelo sdd)'));
 
     final rendered = renderBundle(bundle, vars);

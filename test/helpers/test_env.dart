@@ -53,16 +53,19 @@ MemoryFileSystem memoryFs({String? fixture, String? kitFixture}) {
 
 /// Prompter roteirizado: devolve respostas fixas e registra as perguntas.
 class ScriptedPrompter implements Prompter {
-  ScriptedPrompter({this.stack, this.targets});
+  ScriptedPrompter({this.stack, this.targets, this.confirmAnswer});
 
   final String? stack;
   final List<String>? targets;
+
+  /// Resposta fixa para confirmações (`null` = valor padrão).
+  final bool? confirmAnswer;
   final asked = <String>[];
 
   @override
   bool confirm(String message, {bool defaultValue = true}) {
     asked.add(message);
-    return defaultValue;
+    return confirmAnswer ?? defaultValue;
   }
 
   @override
