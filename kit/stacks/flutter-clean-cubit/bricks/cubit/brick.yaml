@@ -1,0 +1,22 @@
+name: cubit
+description: "Cubit com estados selados (Initial, Loading, Success, Error) e teste com bloc_test."
+version: 0.1.0+1
+environment:
+  mason: ">=0.1.0 <0.2.0"
+vars:
+  feature:
+    type: string
+    description: Nome da feature (ex. auth)
+    prompt: Feature?
+  name:
+    type: string
+    description: Nome do cubit (ex. login)
+    prompt: Cubit?
+  usecase:
+    type: string
+    description: Usecase chamado (padrão = name)
+    default: "{name}"
+  ac:
+    type: string
+    description: Critério de aceite coberto pelos testes
+    default: AC-00

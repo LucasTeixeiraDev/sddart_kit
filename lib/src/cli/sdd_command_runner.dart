@@ -3,8 +3,10 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_sdd/src/cli/commands/check_command.dart';
 import 'package:flutter_sdd/src/cli/commands/doctor_command.dart';
 import 'package:flutter_sdd/src/cli/commands/hook_command.dart';
+import 'package:flutter_sdd/src/cli/commands/import_command.dart';
 import 'package:flutter_sdd/src/cli/commands/init_command.dart';
 import 'package:flutter_sdd/src/cli/commands/new_command.dart';
+import 'package:flutter_sdd/src/cli/commands/scaffold_command.dart';
 import 'package:flutter_sdd/src/cli/commands/status_command.dart';
 import 'package:flutter_sdd/src/cli/commands/sync_command.dart';
 import 'package:flutter_sdd/src/cli/commands/tasks_command.dart';
@@ -32,6 +34,8 @@ class SddCommandRunner extends CommandRunner<int> {
     addCommand(TasksCommand(context));
     addCommand(StatusCommand(context));
     addCommand(CheckCommand(context));
+    addCommand(ScaffoldCommand(context));
+    addCommand(ImportCommand(context));
     addCommand(DoctorCommand(context));
     addCommand(HookCommand(context));
   }

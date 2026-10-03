@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.1.0 (em desenvolvimento)
+- M5: stack pack `flutter-clean-cubit` (skills, rules, extensões de agentes, 6 bricks),
+  `sdd scaffold`, `sdd import scan`, agente `importer` e `/sdd-import`.
 - M4: `sdd check` (modo tarefa e DoD completo), parsers de analyze/format/test/lcov,
   rastreabilidade, verificação de `owns` com interferência; `format` padrão sem escrita.
 - M3: `sdd new`, `tasks validate|graph|next`, `status`, `status set` (lock + guardas),

@@ -127,9 +127,103 @@ void main() {
       KitLayerDir(KitLayer.core, '$memKitPath/core'),
       KitLayerDir(KitLayer.stack, '$memKitPath/stacks/flutter-clean-cubit'),
     ]);
-    expect(bundle.agents, hasLength(6));
+    expect(bundle.agents, hasLength(7));
     expect(bundle.commands, hasLength(8));
-    expect(bundle.skills, hasLength(5));
+    expect(bundle.skills, hasLength(11));
+    expect(bundle.rules, hasLength(5));
+    expect(bundle.bricks.map((b) => b.name), [
+      'cubit',
+      'datasource',
+      'failure',
+      'feature',
+      'repository',
+      'usecase',
+    ]);
     expect(bundle.templates.keys, contains('agents-md-section.md'));
+    // D-019: o stack estende agentes do core sem copiá-los.
+    final implementer = bundle.agents.firstWhere(
+      (a) => a.name == 'implementer',
+    );
+    expect(implementer.skills, ['result-failure', 'bloc-testing']);
+    expect(implementer.tierVariants, hasLength(3));
+    expect(implementer.body, contains('## Stack flutter-clean-cubit'));
+    expect(implementer.layer, KitLayer.stack);
+    final usecase = bundle.brick('usecase')!;
+    final repository = usecase.vars.firstWhere((v) => v.name == 'repository');
+    expect(repository.defaultValue, '{feature}');
+    expect(usecase.vars.firstWhere((v) => v.name == 'name').required, isTrue);
+    expect(bundle.brick('nope'), isNull);
+  });
+
+  group('extensão de agentes', () {
+    test('acrescenta skills e corpo; repetida em várias camadas', () {
+      final project = SampleProject()
+        ..write(
+          '.sdd/overrides/agents/judge.md',
+          '---\nextend: true\nskills: [writing]\n---\nRegra extra.\n',
+        )
+        ..write('.sdd/overrides/agents/worker.md', '---\nextend: true\n---\n');
+      final bundle = project.bundle();
+      final judge = bundle.agents.first;
+      expect(judge.skills, ['writing']);
+      expect(judge.body, 'Revise.\n\nRegra extra.\n');
+      expect(judge.readonly, isTrue);
+      expect(judge.bashAllow, ['sdd check']);
+      // Extensão vazia não altera o corpo nem duplica skills.
+      final worker = bundle.agents.last;
+      expect(worker.body, contains('Trabalhe'));
+      expect(worker.skills, ['writing']);
+    });
+
+    test('erros: sem base, fora de agentes, campos não permitidos', () {
+      final project = SampleProject()
+        ..write('.sdd/overrides/agents/novo.md', '---\nextend: true\n---\n')
+        ..write('.sdd/overrides/rules/domain.md', '---\nextend: true\n---\n')
+        ..write(
+          '.sdd/overrides/agents/judge.md',
+          '---\nextend: true\ntier: fast\n---\n',
+        );
+      final issues = issuesOf(project).join('\n');
+      expect(issues, contains('extend sem "novo" em camada anterior'));
+      expect(issues, contains('extend só é suportado em agentes'));
+      expect(
+        issues,
+        contains('extensão só aceita skills e corpo (remova tier)'),
+      );
+    });
+  });
+
+  test('bricks: validação', () {
+    final project = SampleProject()
+      ..write('.sdd/overrides/bricks/sem-yaml/__brick__/a.txt', 'x')
+      ..write('.sdd/overrides/bricks/sem-dir/brick.yaml', 'name: sem-dir')
+      ..write('.sdd/overrides/bricks/ruim/brick.yaml', 'name: [')
+      ..write('.sdd/overrides/bricks/ruim/__brick__/a.txt', 'x')
+      ..write('.sdd/overrides/bricks/outro/brick.yaml', 'name: x')
+      ..write('.sdd/overrides/bricks/outro/__brick__/a.txt', 'x')
+      ..write('.sdd/overrides/bricks/vars/brick.yaml', 'name: vars\nvars: [1]')
+      ..write('.sdd/overrides/bricks/vars/__brick__/a.txt', 'x');
+    final issues = issuesOf(project).join('\n');
+    expect(issues, contains('sem-yaml: brick.yaml ausente'));
+    expect(issues, contains('sem-dir: __brick__/ ausente'));
+    expect(issues, contains('ruim/brick.yaml: YAML inválido'));
+    expect(issues, contains('outro/brick.yaml: "name" deve ser "outro"'));
+    expect(issues, contains('"vars" deve ser mapa'));
+  });
+
+  test('brick válido de override com vars simples e tipadas', () {
+    final project = SampleProject()
+      ..write(
+        '.sdd/overrides/bricks/meu/brick.yaml',
+        'name: meu\ndescription: d\nvars:\n  a: x\n'
+            '  b: {type: boolean, default: false, description: B}\n',
+      )
+      ..write('.sdd/overrides/bricks/meu/__brick__/a.txt', 'x');
+    final brick = project.bundle().brick('meu')!;
+    expect(brick.layer, KitLayer.override);
+    expect(brick.vars.first.type, 'string');
+    expect(brick.vars.first.required, isTrue);
+    expect(brick.vars.last.type, 'boolean');
+    expect(brick.vars.last.defaultValue, false);
   });
 }

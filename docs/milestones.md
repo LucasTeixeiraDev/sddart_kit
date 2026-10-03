@@ -49,8 +49,15 @@ Legenda: [x] feito · [ ] pendente. Detalhes das decisões em `decisions.md`.
 - [x] Teste manual com Flutter, git e cobertura reais; correção do `format` no modo completo
 - [x] 201 testes; cobertura de `lib/src/core/` 99%
 
-## M5 — Stack pack e importação
-- [ ] Skills, rules, bricks, `sdd scaffold`, `sdd import scan`, `/sdd-import`
+## M5 — Stack pack e importação ✅
+- [x] Skills `clean-arch-layers`, `result-failure`, `cubit-patterns`, `bloc-testing`, `dio-datasource`
+- [x] Rules por glob (`domain`, `data`, `presentation`, `tests`) com caminhos do config
+- [x] Extensão de agentes do core pelo stack (D-029)
+- [x] 6 bricks + `sdd scaffold` (mason, variáveis automáticas, `--task` checa owns) (D-030, D-031)
+- [x] Bricks validados num app Flutter real: analyze (very_good_analysis), format e testes verdes
+- [x] `sdd import scan`, agente `importer`, skill `import-conversion`, `/sdd-import` (D-033)
+- [x] Fixture `import_source` (duplicatas Claude/Cursor, layout de repositório, arquivo gerado)
+- [x] 219 testes; cobertura de `lib/src/core/` 99%
 
 ## M6 — Orquestração e memória
 - [ ] Agentes e comandos finais, memória, hooks opcionais (D-012), README completo, CHANGELOG

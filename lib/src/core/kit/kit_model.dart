@@ -115,6 +115,42 @@ class KitCommand extends KitItem {
   final String? args;
 }
 
+/// Variável declarada no `brick.yaml`.
+class BrickVar {
+  const BrickVar({
+    required this.name,
+    this.type = 'string',
+    this.description,
+    this.defaultValue,
+  });
+
+  final String name;
+  final String type;
+  final String? description;
+  final Object? defaultValue;
+
+  bool get required => defaultValue == null;
+}
+
+/// Brick mason (`bricks/<nome>/brick.yaml` + `__brick__/`).
+class KitBrick {
+  const KitBrick({
+    required this.name,
+    required this.description,
+    required this.path,
+    required this.layer,
+    required this.vars,
+  });
+
+  final String name;
+  final String description;
+
+  /// Diretório do brick (contém `brick.yaml`).
+  final String path;
+  final KitLayer layer;
+  final List<BrickVar> vars;
+}
+
 /// Kit resolvido (core + stack + overrides), ordenado por nome.
 class KitBundle {
   const KitBundle({
@@ -123,6 +159,7 @@ class KitBundle {
     required this.rules,
     required this.commands,
     required this.templates,
+    this.bricks = const [],
   });
 
   final List<KitAgent> agents;
@@ -132,6 +169,10 @@ class KitBundle {
 
   /// Caminho relativo a `templates/` → conteúdo.
   final Map<String, String> templates;
+  final List<KitBrick> bricks;
+
+  KitBrick? brick(String name) =>
+      bricks.where((b) => b.name == name).firstOrNull;
 }
 
 /// Erro de conteúdo do kit ou dos overrides.

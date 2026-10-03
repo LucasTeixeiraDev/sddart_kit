@@ -20,6 +20,21 @@ void main() {
     expect(cli.out.toString(), contains('sync em dia'));
   });
 
+  test('seção gerenciada do AGENTS.md cabe em ~80 linhas (kit real)', () async {
+    final cli = await initialized();
+    final agents = cli.read('AGENTS.md');
+    final section = agents.substring(
+      agents.indexOf('<!-- sdd:begin -->'),
+      agents.indexOf('<!-- sdd:end -->'),
+    );
+    expect('\n'.allMatches(section).length, lessThanOrEqualTo(80));
+    expect(cli.exists('.claude/skills/sdd-result-failure/SKILL.md'), isTrue);
+    expect(
+      cli.read('.claude/rules/sdd-domain.md'),
+      contains('"lib/features/**/domain/**"'),
+    );
+  });
+
   test('--check falha e lista mudanças quando desatualizado', () async {
     final cli = await initialized();
     cli.fs.file('$memProjectPath/.claude/agents/sdd-explorer.md').deleteSync();

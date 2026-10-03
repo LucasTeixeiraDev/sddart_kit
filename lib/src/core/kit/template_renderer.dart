@@ -126,7 +126,7 @@ KitBundle renderBundle(KitBundle bundle, Map<String, String> vars) {
           body: render(r.body, r.sourcePath),
           layer: r.layer,
           sourcePath: r.sourcePath,
-          globs: r.globs,
+          globs: [for (final g in r.globs) render(g, r.sourcePath)],
           always: r.always,
         ),
     ],
@@ -143,6 +143,7 @@ KitBundle renderBundle(KitBundle bundle, Map<String, String> vars) {
     ],
     // Templates são renderizados por quem os usa (AGENTS.md, sdd new).
     templates: bundle.templates,
+    bricks: bundle.bricks,
   );
   if (issues.isNotEmpty) throw KitException(issues);
   return rendered;

@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_sdd/flutter_sdd.dart';
+import 'package:flutter_sdd/src/infra/brick_generator.dart';
 import 'package:flutter_sdd/src/infra/prompter.dart';
 import 'package:path/path.dart' as p;
 
@@ -95,6 +96,7 @@ class CliHarness {
     Map<String, String>? environment,
     this.interactive = false,
     this.packageRoot,
+    this.brickGenerator,
   }) : fs = fs ?? memoryFs(fixture: fixture),
        processRunner = processRunner ?? FakeProcessRunner(),
        prompter = prompter ?? ScriptedPrompter(),
@@ -106,6 +108,7 @@ class CliHarness {
   final Map<String, String> environment;
   final bool interactive;
   final Uri? packageRoot;
+  final BrickGenerator? brickGenerator;
   final out = StringBuffer();
   final err = StringBuffer();
 
@@ -123,6 +126,7 @@ class CliHarness {
         out: out,
         err: err,
         interactive: interactive,
+        brickGenerator: brickGenerator ?? const MasonBrickGenerator(),
       ),
     ).run(args);
   }

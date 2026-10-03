@@ -87,7 +87,9 @@ class _ConfigReader {
       'models',
       'hooks',
       'adapters',
+      'scaffold',
     },
+    'scaffold': {'vars'},
     'kit': {'stack'},
     'adapters': {'cursor'},
     'adapters.cursor': {'skills', 'agents'},
@@ -133,6 +135,7 @@ class _ConfigReader {
     final formatOnEdit = _bool('hooks.format_on_edit');
     final cursorSkills = _enum('adapters.cursor.skills', CursorSkills.values);
     final cursorAgents = _enum('adapters.cursor.agents', CursorAgents.values);
+    final scaffoldVars = _scaffoldVars();
 
     if (errors.isNotEmpty) throw ConfigException(errors);
     return ConfigParseResult(
@@ -152,6 +155,7 @@ class _ConfigReader {
           cursorSkills: cursorSkills!,
           cursorAgents: cursorAgents!,
         ),
+        scaffoldVars: scaffoldVars ?? const {},
       ),
       warnings,
     );
@@ -289,6 +293,23 @@ class _ConfigReader {
             'esperado string ou mapa {default, claude, cursor}, '
             'recebido ${_kind(value)}',
           );
+      }
+    }
+    return result;
+  }
+
+  Map<String, String>? _scaffoldVars() {
+    final map = _map('scaffold.vars');
+    if (map == null) return null;
+    final result = <String, String>{};
+    for (final MapEntry(:key, :value) in map.entries) {
+      if (value is String || value is num || value is bool) {
+        result[key] = '$value';
+      } else {
+        _error(
+          'scaffold.vars.$key',
+          'esperado escalar, recebido ${_kind(value)}',
+        );
       }
     }
     return result;

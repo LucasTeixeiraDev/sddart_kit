@@ -1,0 +1,6 @@
+---
+description: Widgets do design system
+globs: lib/**/widgets/**
+alwaysApply: false
+---
+Use sempre os componentes AppButton e AppText do design system.

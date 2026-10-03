@@ -1,0 +1,10 @@
+name: feature
+description: "Esqueleto das 3 camadas de uma feature (domain, data, presentation)."
+version: 0.1.0+1
+environment:
+  mason: ">=0.1.0 <0.2.0"
+vars:
+  feature:
+    type: string
+    description: Nome da feature (ex. auth)
+    prompt: Feature?

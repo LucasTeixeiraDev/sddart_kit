@@ -2,6 +2,7 @@ import 'package:file/file.dart';
 import 'package:flutter_sdd/src/core/config/yaml_utils.dart';
 import 'package:flutter_sdd/src/core/config/yaml_writer.dart';
 import 'package:flutter_sdd/src/core/kit/kit_locator.dart';
+import 'package:flutter_sdd/src/core/util/hash.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
@@ -110,23 +111,13 @@ String computeKitHash(FileSystem fs, KitLocation kit, String stack) {
         for (final e in fs.directory(root).listSync(recursive: true))
           if (e is File) e.path,
   ]..sort();
-  // CLI só roda na VM (ints de 64 bits); nunca compilado para JS.
-  // ignore: avoid_js_rounded_ints
-  var hash = 0xcbf29ce484222325;
-  const prime = 0x100000001b3;
-  void add(List<int> bytes) {
-    for (final b in bytes) {
-      hash = (hash ^ b) * prime;
-    }
-  }
-
+  final hash = Fnv1a64();
   for (final file in files) {
-    add(p.relative(file, from: kit.path).codeUnits);
-    add(const [0]);
-    add(fs.file(file).readAsBytesSync());
-    add(const [0]);
+    hash
+      ..add(p.relative(file, from: kit.path).codeUnits)
+      ..add(const [0])
+      ..add(fs.file(file).readAsBytesSync())
+      ..add(const [0]);
   }
-  // `toUnsigned(64)` não cabe num int de 64 bits com sinal: monta as metades.
-  String half(int v) => v.toUnsigned(32).toRadixString(16).padLeft(8, '0');
-  return '${half(hash >> 32)}${half(hash)}';
+  return hash.hex;
 }

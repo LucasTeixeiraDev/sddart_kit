@@ -235,3 +235,63 @@ Falhas de carga (erro de compilação) chegam como um teste **não oculto** cham
 primeiras linhas da saída. A rastreabilidade é estática: busca `test_tag_pattern` em
 `<test_path>/**/*_test.dart`.
 **Origem:** M4.
+
+## D-029 · Extensão de agentes por camada (2026-10)
+**Decisão:** um arquivo de agente com `extend: true` numa camada posterior acrescenta `skills`
+e anexa o corpo ao agente de mesmo nome, sem copiá-lo. Outros campos são proibidos na extensão.
+O stack pré-carrega só o essencial: implementer `[result-failure, bloc-testing]`, architect
+`[clean-arch-layers, result-failure]`, planner `[clean-arch-layers]`, reviewer
+`[result-failure]`. As demais skills são lidas sob demanda (a tarefa cita `sdd-<nome>`), e as
+rules por glob carregam as regras de camada automaticamente.
+**Motivo:** skills pré-carregadas entram inteiras no contexto (economia de tokens, princípio 7).
+**Origem:** M5 (resolve a pendência do D-019).
+
+## D-030 · Bricks do stack (2026-10)
+**Decisão:**
+- 6 bricks: `feature` (pastas), `failure`, `datasource` (extra: deixa o `repository`
+  compilável sozinho), `repository`, `usecase` e `cubit`.
+- Variáveis automáticas: `package` (do pubspec), `features_path`, `features_import` e
+  `test_path`. Ficam em `scaffold.vars` do config: `result_import`, com `{package}`.
+- Defaults podem referenciar outras variáveis (`default: "{feature}"`).
+- Variáveis de caminho usam chave tripla (`{{{features_path}}}`): o mason escapa `/` em HTML.
+- O scaffold nunca sobrescreve (conflito = `skipped`; conteúdo igual = `identical`).
+- Contrato assumido: `Result<T, E>` selado com `Ok(value)` e `Err(error)`. Projetos com outro
+  contrato trocam os bricks via `.sdd/overrides/bricks/`.
+**Origem:** M5.
+
+## D-031 · Código gerado passa nos gates (2026-10)
+**Decisão:** depois de gerar, o `sdd scaffold` roda `dart fix --apply
+--code=directives_ordering` em cada `.dart` criado (o `dart fix` aceita um único caminho;
+passar o diretório mexeria em arquivos do usuário) e `dart format` neles.
+Os membros públicos dos templates são documentados.
+**Motivo:** a ordem dos imports e as quebras de linha dependem do nome do pacote e dos nomes
+gerados. Validado num app Flutter real com `very_good_analysis`: analyze sem issues, format
+sem mudanças e testes gerados passando.
+**Origem:** M5.
+
+## D-032 · Exceptions não mapeadas no repository (2026-10)
+**Decisão:** o `RepositoryImpl` captura só `Exception`. As conhecidas viram Failures
+específicas. As não mapeadas fazem `FlutterError.reportError(...)` (chega ao
+`FlutterError.onError`, ou seja, ao Crashlytics) e retornam `Err(<Feature>UnexpectedFailure)`.
+`Error` (bug) nunca é capturado.
+**Motivo:** concilia "nenhuma exception atravessa o repository" com "erros não mapeados não
+podem ser engolidos". É uma decisão do stack; projetos com reporter próprio trocam por override.
+**Origem:** M5.
+
+## D-033 · Importação (2026-10)
+**Decisão:** `sdd import scan` percorre o caminho inteiro, ignorando `.git`, `build` e `.sdd`.
+- **Tipo:** inferido pelo caminho (`agents/`, `commands/`, `rules/`, `SKILL.md`, `.mdc`,
+  `CLAUDE.md`, `AGENTS.md`, `.cursorrules`).
+- **Ferramenta:** inferida pelo caminho (`.claude`/`claude`, `.cursor`/`cursor`), pela
+  extensão e pelo frontmatter.
+- **Duplicatas:** mesmo tipo e nome, mesmo conteúdo normalizado, ou Jaccard de linhas ≥ 0,8.
+- Arquivos gerados pelo sdd são ignorados.
+
+O agente `importer` (deep) classifica e converte; o `/sdd-import` para para aprovação humana
+entre os dois modos. Itens "kit" vão para `.sdd/kit-proposals.md`, nunca para o kit.
+**Origem:** M5.
+
+## D-034 · Formatação e análise deste repositório (2026-10)
+**Decisão:** `kit/**` fica fora do analyzer, e o format do repo roda em `bin lib test`.
+**Motivo:** os templates dos bricks são mustache, não Dart válido.
+**Origem:** M5.

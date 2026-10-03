@@ -26,8 +26,24 @@ Com um executável compilado (`dart compile exe bin/sdd.dart`), aponte para o ki
 | `sdd status set <spec> <alvo> <valor>` | Única forma de mudar `status.yaml` (`T03 done`, `gate plan_approved`, `phase exec`, `review approved`) |
 | `sdd check --task <id> [--spec <id>]` | Gates nos arquivos `owns` da tarefa + verificação de `owns` via git |
 | `sdd check [--spec <id>] [--max-lines N]` | DoD completo: gates de `dod.gates`, cobertura (lcov) e rastreabilidade de AC |
+| `sdd scaffold <brick> [--vars k=v ...] [--task <id>]` | Aplica um brick mason do stack (nunca sobrescreve) |
+| `sdd import scan <caminho>` | Inventário somente leitura de agentes/skills/rules/comandos (Claude e Cursor) para o `/sdd-import` |
 | `sdd doctor` | Verifica ambiente, config, kit, `kit.lock` e se o sync está em dia |
 | `sdd hook format\|guard-bash` | Hooks chamados pelos arquivos gerados (interno) |
+
+## Stack pack `flutter-clean-cubit`
+
+Clean architecture por feature + Cubit + `Result` (Ok/Err) com Failure selado. Traz skills,
+rules por camada, extensões dos agentes do core e os bricks `feature`, `failure`,
+`datasource`, `repository`, `usecase` e `cubit`:
+
+```sh
+sdd scaffold failure --vars feature=auth
+sdd scaffold repository --vars feature=auth --vars method=login --vars ac=AC-02
+```
+
+Os bricks assumem `Result<T, E>` selado com `Ok(value)`/`Err(error)` em
+`scaffold.vars.result_import` (padrão `package:<app>/core/result/result.dart`).
 
 ## Overrides
 

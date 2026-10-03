@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:flutter_sdd/src/core/kit/kit_locator.dart';
+import 'package:flutter_sdd/src/infra/brick_generator.dart';
 import 'package:flutter_sdd/src/infra/file_locker.dart';
 import 'package:flutter_sdd/src/infra/package_root.dart';
 import 'package:flutter_sdd/src/infra/process_runner.dart';
@@ -23,6 +24,7 @@ class SddContext {
     required this.interactive,
     this.readStdin = _noStdin,
     FileLocker? locker,
+    this.brickGenerator = const MasonBrickGenerator(),
   }) : locker = locker ?? InProcessFileLocker();
 
   /// Contexto real do processo.
@@ -59,6 +61,9 @@ class SddContext {
 
   /// Lock entre processos para escritas de estado (`status.yaml`).
   final FileLocker locker;
+
+  /// Geração de bricks (mason usa dart:io; testes injetam um fake).
+  final BrickGenerator brickGenerator;
 
   KitLocator get kitLocator =>
       KitLocator(fs: fs, environment: environment, packageRoot: packageRoot);

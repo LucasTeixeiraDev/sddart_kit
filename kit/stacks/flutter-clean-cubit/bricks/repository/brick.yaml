@@ -1,0 +1,26 @@
+name: repository
+description: "Contrato de repository (domain), implementação com mapeamento Exception → Failure (data) e teste."
+version: 0.1.0+1
+environment:
+  mason: ">=0.1.0 <0.2.0"
+vars:
+  feature:
+    type: string
+    description: Nome da feature (ex. auth)
+    prompt: Feature?
+  name:
+    type: string
+    description: Nome do repository (padrão = feature)
+    default: "{feature}"
+  method:
+    type: string
+    description: Método inicial do contrato
+    default: fetch
+  datasource:
+    type: string
+    description: Datasource usado pela implementação (padrão = name)
+    default: "{name}"
+  ac:
+    type: string
+    description: Critério de aceite coberto pelos testes
+    default: AC-00

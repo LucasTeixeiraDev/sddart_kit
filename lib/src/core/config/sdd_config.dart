@@ -140,6 +140,7 @@ class SddConfig {
     required this.models,
     required this.hooks,
     this.adapters = const AdaptersConfig(),
+    this.scaffoldVars = const {},
   });
 
   static const currentVersion = 1;
@@ -162,6 +163,10 @@ class SddConfig {
   final Map<Tier, ModelMapping> models;
   final HooksConfig hooks;
   final AdaptersConfig adapters;
+
+  /// Variáveis padrão para todos os bricks (`scaffold.vars`); `{package}` é
+  /// substituído pelo nome do pacote do projeto.
+  final Map<String, String> scaffoldVars;
 
   bool hasTarget(Target target) => targets.contains(target);
 }

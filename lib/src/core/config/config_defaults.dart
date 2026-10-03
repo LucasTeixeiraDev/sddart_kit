@@ -38,6 +38,7 @@ const Map<String, Object?> coreConfigDefaults = {
   'memory': {'learnings_warn_after': 15},
   'models': {'deep': 'opus', 'standard': 'sonnet', 'fast': 'haiku'},
   'hooks': {'format_on_edit': false},
+  'scaffold': {'vars': <String, Object?>{}},
   'adapters': {
     'cursor': {'skills': 'shared', 'agents': 'own'},
   },

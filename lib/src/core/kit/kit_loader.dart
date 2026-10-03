@@ -1,8 +1,10 @@
 import 'package:file/file.dart';
 import 'package:flutter_sdd/src/core/config/sdd_config.dart';
+import 'package:flutter_sdd/src/core/config/yaml_utils.dart';
 import 'package:flutter_sdd/src/core/kit/frontmatter.dart';
 import 'package:flutter_sdd/src/core/kit/kit_model.dart';
 import 'package:path/path.dart' as p;
+import 'package:yaml/yaml.dart';
 
 /// Uma camada do kit: diretório com `agents/`, `skills/`, `rules/`,
 /// `commands/` e `templates/`.
@@ -31,13 +33,15 @@ class KitLoader {
     final rules = <String, KitRule>{};
     final commands = <String, KitCommand>{};
     final templates = <String, String>{};
+    final bricks = <String, KitBrick>{};
 
     for (final layer in layers) {
-      _loadMarkdown(layer, 'agents', agents, _agent);
+      _loadMarkdown(layer, 'agents', agents, _agent, extend: _extendAgent);
       _loadMarkdown(layer, 'rules', rules, _rule);
       _loadMarkdown(layer, 'commands', commands, _command);
       _loadSkills(layer, skills);
       _loadTemplates(layer, templates);
+      _loadBricks(layer, bricks);
     }
 
     for (final agent in agents.values) {
@@ -59,6 +63,7 @@ class KitLoader {
       templates: Map.fromEntries(
         templates.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
       ),
+      bricks: bricks.values.toList()..sort((a, b) => a.name.compareTo(b.name)),
     );
   }
 
@@ -68,8 +73,9 @@ class KitLoader {
     KitLayerDir layer,
     String kind,
     Map<String, T> into,
-    T? Function(_Source) parse,
-  ) {
+    T? Function(_Source) parse, {
+    T? Function(T base, _Source extension)? extend,
+  }) {
     final dir = fs.directory(p.join(layer.path, kind));
     if (!dir.existsSync()) return;
     final files =
@@ -87,8 +93,104 @@ class KitLoader {
         into.remove(name);
         continue;
       }
+      if (source.data['extend'] == true) {
+        final base = into[name];
+        if (extend == null) {
+          _issues.add('${source.path}: extend só é suportado em agentes');
+        } else if (base == null) {
+          _issues.add('${source.path}: extend sem "$name" em camada anterior');
+        } else {
+          final extended = extend(base, source);
+          if (extended != null) into[name] = extended;
+        }
+        continue;
+      }
       final item = parse(source);
       if (item != null) into[name] = item;
+    }
+  }
+
+  /// Extensão de agente: acrescenta `skills` e anexa o corpo, sem copiar o
+  /// agente (ex.: stack adicionando skills ao implementer do core).
+  KitAgent? _extendAgent(KitAgent base, _Source s) {
+    final unknown = s.data.keys.where(
+      (k) => !const {'extend', 'name', 'skills'}.contains(k),
+    );
+    if (unknown.isNotEmpty) {
+      _issues.add(
+        '${s.path}: extensão só aceita skills e corpo '
+        '(remova ${unknown.join(', ')})',
+      );
+      return null;
+    }
+    final added = _stringList(s, 'skills') ?? const <String>[];
+    final extra = s.body.trim();
+    return KitAgent(
+      name: base.name,
+      description: base.description,
+      body: extra.isEmpty ? base.body : '${base.body.trimRight()}\n\n$extra\n',
+      layer: s.layer,
+      sourcePath: s.path,
+      tier: base.tier,
+      tierVariants: base.tierVariants,
+      tools: base.tools,
+      readonly: base.readonly,
+      skills: [...base.skills, ...added.where((x) => !base.skills.contains(x))],
+      bashAllow: base.bashAllow,
+    );
+  }
+
+  void _loadBricks(KitLayerDir layer, Map<String, KitBrick> into) {
+    final dir = fs.directory(p.join(layer.path, 'bricks'));
+    if (!dir.existsSync()) return;
+    for (final brickDir in dir.listSync().whereType<Directory>()) {
+      final name = p.basename(brickDir.path);
+      final yamlFile = fs.file(p.join(brickDir.path, 'brick.yaml'));
+      if (!yamlFile.existsSync()) {
+        _issues.add('${brickDir.path}: brick.yaml ausente');
+        continue;
+      }
+      if (!fs.directory(p.join(brickDir.path, '__brick__')).existsSync()) {
+        _issues.add('${brickDir.path}: __brick__/ ausente');
+        continue;
+      }
+      final Object? raw;
+      try {
+        raw = loadPlainYaml(yamlFile.readAsStringSync());
+      } on YamlException catch (e) {
+        _issues.add('${yamlFile.path}: YAML inválido: ${e.message}');
+        continue;
+      }
+      if (raw is! Map<String, Object?> || raw['name'] != name) {
+        _issues.add('${yamlFile.path}: "name" deve ser "$name"');
+        continue;
+      }
+      final varsRaw = raw['vars'] ?? const <String, Object?>{};
+      if (varsRaw is! Map<String, Object?>) {
+        _issues.add('${yamlFile.path}: "vars" deve ser mapa');
+        continue;
+      }
+      into[name] = KitBrick(
+        name: name,
+        description: '${raw['description'] ?? ''}',
+        path: brickDir.path,
+        layer: layer.layer,
+        vars: [
+          for (final MapEntry(:key, :value) in varsRaw.entries)
+            BrickVar(
+              name: key,
+              type: value is Map<String, Object?>
+                  ? '${value['type'] ?? 'string'}'
+                  : 'string',
+              description: value is Map<String, Object?>
+                  ? value['description'] as String?
+                  : null,
+              defaultValue: value is Map<String, Object?>
+                  ? value['default']
+                  : null,
+            ),
+        ],
+      );
     }
   }
 

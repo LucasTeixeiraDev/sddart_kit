@@ -38,6 +38,10 @@ config_defaults:
       - Nenhuma exception atravessa a fronteira do repository
       - Erros não mapeados continuam chegando ao Crashlytics
       - Failures de negócio do backend estão mapeados para Failures da feature
+  scaffold:
+    vars:
+      # Contrato assumido pelos bricks: sealed Result<T, E> com Ok(value) e Err(error).
+      result_import: "package:{package}/core/result/result.dart"
   models:
     deep: {default: opus, cursor: claude-opus-5-5}
     standard: {default: sonnet, cursor: claude-sonnet-5}

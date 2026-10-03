@@ -1,0 +1,10 @@
+---
+description: Mapeamento de erros da API
+globs: lib/**/data/**
+alwaysApply: false
+---
+O backend responde erros com o campo code.
+USR_404 vira UserNotFoundFailure.
+USR_423 vira BlockedUserFailure.
+Qualquer outro código vira UnexpectedFailure.
+Consulte a tabela completa no wiki.
