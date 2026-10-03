@@ -126,5 +126,7 @@ String computeKitHash(FileSystem fs, KitLocation kit, String stack) {
     add(fs.file(file).readAsBytesSync());
     add(const [0]);
   }
-  return hash.toUnsigned(64).toRadixString(16).padLeft(16, '0');
+  // `toUnsigned(64)` não cabe num int de 64 bits com sinal: monta as metades.
+  String half(int v) => v.toUnsigned(32).toRadixString(16).padLeft(8, '0');
+  return '${half(hash >> 32)}${half(hash)}';
 }

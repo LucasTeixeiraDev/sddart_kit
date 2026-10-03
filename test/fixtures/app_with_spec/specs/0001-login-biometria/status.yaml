@@ -1,0 +1,6 @@
+# escrito pelo sdd — não edite; use sdd status set
+spec: 0001-login-biometria
+phase: exec
+gates: {analysis_approved: true, plan_approved: true}
+tasks: {}
+review: {state: pending, blockers: 0, cycles: 0}

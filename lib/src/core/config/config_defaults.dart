@@ -30,7 +30,11 @@ const Map<String, Object?> coreConfigDefaults = {
     },
     'checklist': <String>[],
   },
-  'execution': {'max_fix_attempts': 2, 'escalate_to': 'deep'},
+  'execution': {
+    'max_fix_attempts': 2,
+    'escalate_to': 'deep',
+    'max_review_cycles': 2,
+  },
   'memory': {'learnings_warn_after': 15},
   'models': {'deep': 'opus', 'standard': 'sonnet', 'fast': 'haiku'},
   'hooks': {'format_on_edit': false},

@@ -48,8 +48,15 @@ void main() {
     const kit = KitLocation(memKitPath, KitSource.flag);
     final a = computeKitHash(fs, kit, 'flutter-clean-cubit');
     expect(computeKitHash(fs, kit, 'flutter-clean-cubit'), a);
-    expect(a, hasLength(16));
-    fs.file('$memKitPath/core/agents/novo.md').writeAsStringSync('x');
-    expect(computeKitHash(fs, kit, 'flutter-clean-cubit'), isNot(a));
+    expect(a, matches(RegExp(r'^[0-9a-f]{16}$')));
+    // Conteúdos variados cobrem hashes com o bit mais alto ligado.
+    final seen = <String>{a};
+    for (var i = 0; i < 20; i++) {
+      fs.file('$memKitPath/core/agents/novo.md').writeAsStringSync('x$i');
+      final h = computeKitHash(fs, kit, 'flutter-clean-cubit');
+      expect(h, matches(RegExp(r'^[0-9a-f]{16}$')));
+      seen.add(h);
+    }
+    expect(seen, hasLength(21));
   });
 }

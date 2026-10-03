@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:flutter_sdd/src/core/kit/kit_locator.dart';
+import 'package:flutter_sdd/src/infra/file_locker.dart';
 import 'package:flutter_sdd/src/infra/package_root.dart';
 import 'package:flutter_sdd/src/infra/process_runner.dart';
 import 'package:flutter_sdd/src/infra/prompter.dart';
@@ -21,7 +22,8 @@ class SddContext {
     required this.err,
     required this.interactive,
     this.readStdin = _noStdin,
-  });
+    FileLocker? locker,
+  }) : locker = locker ?? InProcessFileLocker();
 
   /// Contexto real do processo.
   factory SddContext.io() => SddContext(
@@ -35,6 +37,7 @@ class SddContext {
     err: io.stderr,
     interactive: io.stdin.hasTerminal,
     readStdin: () => io.stdin.transform(utf8.decoder).join(),
+    locker: const IoFileLocker(),
   );
 
   static Future<String> _noStdin() async => '';
@@ -53,6 +56,9 @@ class SddContext {
 
   /// Lê todo o stdin (payload JSON dos hooks).
   final Future<String> Function() readStdin;
+
+  /// Lock entre processos para escritas de estado (`status.yaml`).
+  final FileLocker locker;
 
   KitLocator get kitLocator =>
       KitLocator(fs: fs, environment: environment, packageRoot: packageRoot);

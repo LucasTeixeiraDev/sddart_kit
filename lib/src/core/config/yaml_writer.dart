@@ -43,13 +43,20 @@ bool _isFlow(List<Object?> list) =>
     list.every((e) => e is! Map && e is! List) &&
     list.map(_inline).join(', ').length <= 60;
 
-String _inline(Object? value) => switch (value) {
+/// Valor em estilo de fluxo numa única linha (mapas viram `{a: 1}`).
+String inlineYaml(Object? value) => _inline(value, flowMaps: true);
+
+String _inline(Object? value, {bool flowMaps = false}) => switch (value) {
   null => 'null',
   Map() when value.isEmpty => '{}',
-  List() => '[${value.map(_inline).join(', ')}]',
+  Map() when flowMaps => '{${value.entries.map(_flowEntry).join(', ')}}',
+  List() => '[${value.map((v) => _inline(v, flowMaps: flowMaps)).join(', ')}]',
   String() => _scalar(value),
   _ => '$value',
 };
+
+String _flowEntry(MapEntry<Object?, Object?> e) =>
+    '${_scalar('${e.key}')}: ${_inline(e.value, flowMaps: true)}';
 
 final _plainSafe = RegExp(r'^[A-Za-z_][A-Za-z0-9_./-]*$');
 const _reserved = {'true', 'false', 'null', 'yes', 'no', 'on', 'off', '~'};

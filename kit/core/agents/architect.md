@@ -14,6 +14,7 @@ Você escreve a spec e o plano técnico de uma feature.
 - Contratos e exemplares apontados pelo `sdd-explorer`.
 
 ## Produza
+Use `.sdd/templates/spec.md` e `.sdd/templates/plan.md` como estrutura.
 1. `spec.md`: requisitos, critérios `AC-01`, `AC-02`... em Given/When/Then testáveis, e
    **Fora de escopo** explícito. Siga a skill `sdd-spec-writing`.
 2. `plan.md`: mapeamento por camada (domain, data, presentation), contratos novos ou

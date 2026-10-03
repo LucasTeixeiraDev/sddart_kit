@@ -146,3 +146,50 @@ com `result-failure`) sem copiar o agente inteiro.
 **Pendência:** confirmar que o Claude Code anexa os argumentos quando o corpo não usa
 `$ARGUMENTS`; se não anexar, o adapter do Claude injeta a linha.
 **Origem:** M2.
+
+## D-021 · Escrita do `status.yaml` (2026-10)
+**Decisão:** `sdd status set` relê o arquivo sob lock do SO (`RandomAccessFile.lock`, arquivo
+de lock em `<tmp>/sdd-locks/`, fora do repo) e grava com arquivo temporário + rename.
+Gramática fechada: `<Txx> <estado>`, `gate <nome> [true|false]`, `phase <fase>`,
+`review <estado> [blockers=N]`. Erro de gramática = exit 2; transição inválida = exit 1.
+**Motivo:** implementers paralelos disparam `status set` ao mesmo tempo; `package:file`
+ignora `exclusive` na criação de arquivos, então não serve como lock.
+**Origem:** M3.
+
+## D-022 · Guardas de transição (2026-10)
+**Decisão:** o CLI aplica as regras do fluxo, não o orquestrador:
+- `Txx in_progress` exige fase `exec` e dependências `done`, e registra `tier_used`;
+- `Txx failed` incrementa `attempts` e vira `blocked` sozinho quando as tentativas acabam;
+- `Txx pending` (reset humano) zera `attempts`;
+- `gate plan_approved` exige `analysis_approved`; revogar um gate revoga os seguintes;
+- fases `spec|plan` exigem `analysis_approved`; `tasks|exec|review` exigem `plan_approved`;
+  `done` exige todas as tarefas `done` e `review approved` (sem blockers);
+- `review in_progress` conta um ciclo; acima de `execution.max_review_cycles` (padrão 2), recusa.
+**Motivo:** estado determinístico e à prova de erro do LLM.
+**Origem:** M3.
+
+## D-023 · Política de tentativas e ondas no `tasks next` (2026-10)
+**Decisão:** até `max_fix_attempts` falhas no tier da tarefa; depois **uma** execução no
+`escalate_to` (só se for um tier acima); depois esgotada (`blocked`). O `next` devolve apenas a
+menor onda com tarefas não concluídas (ondas sequenciais, commit por onda, D-007), com o
+agente resolvido (`sdd-implementer-<tier>`). Tier sem variante no agente = erro no `validate`;
+escalonamento sem variante = aviso.
+**Origem:** M3.
+
+## D-024 · Templates de fase exportados para `.sdd/templates/` (2026-10)
+**Decisão:** o `sync` gera `.sdd/templates/{analysis,spec,plan,task,review}.md`, sem renderizar
+e sem aviso de gerado (identificados pelo manifesto). Os agentes leem dali.
+**Motivo:** o kit fica no pub-cache, fora do alcance dos agentes; o aviso seria copiado para as
+specs junto com o template.
+**Origem:** M3.
+
+## D-025 · Validação de tarefas (2026-10)
+**Decisão:** além da tabela do brief, também é erro:
+- o nome do arquivo não começar com o id (`T03-*.md`);
+- faltar uma das seções `## Objetivo`, `## Detalhes` ou `## Pronto da tarefa`;
+- um caminho em `owns`, `reads` ou `exemplar` ser absoluto ou conter `..`;
+- o agente não existir no kit.
+
+`reads` aceita arquivos que são `owns` de dependências transitivas. `Pronto da tarefa` sem
+`sdd check --task` gera aviso. A spec pode ser referida por id completo, `0001` ou `1`.
+**Origem:** M3.

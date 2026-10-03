@@ -84,10 +84,12 @@ class ExecutionConfig {
   const ExecutionConfig({
     required this.maxFixAttempts,
     required this.escalateTo,
+    this.maxReviewCycles = 2,
   });
 
   final int maxFixAttempts;
   final Tier escalateTo;
+  final int maxReviewCycles;
 }
 
 /// Como o Cursor recebe skills e agentes (ver docs/adapters.md).

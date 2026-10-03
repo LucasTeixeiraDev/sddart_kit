@@ -3,7 +3,11 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_sdd/src/cli/commands/doctor_command.dart';
 import 'package:flutter_sdd/src/cli/commands/hook_command.dart';
 import 'package:flutter_sdd/src/cli/commands/init_command.dart';
+import 'package:flutter_sdd/src/cli/commands/new_command.dart';
+import 'package:flutter_sdd/src/cli/commands/status_command.dart';
 import 'package:flutter_sdd/src/cli/commands/sync_command.dart';
+import 'package:flutter_sdd/src/cli/commands/tasks_command.dart';
+import 'package:flutter_sdd/src/cli/sdd_command.dart';
 import 'package:flutter_sdd/src/cli/sdd_context.dart';
 import 'package:flutter_sdd/src/infra/exit_codes.dart';
 import 'package:flutter_sdd/src/version.dart';
@@ -23,6 +27,9 @@ class SddCommandRunner extends CommandRunner<int> {
       );
     addCommand(InitCommand(context));
     addCommand(SyncCommand(context));
+    addCommand(NewCommand(context));
+    addCommand(TasksCommand(context));
+    addCommand(StatusCommand(context));
     addCommand(DoctorCommand(context));
     addCommand(HookCommand(context));
   }
@@ -33,6 +40,9 @@ class SddCommandRunner extends CommandRunner<int> {
   Future<int> run(Iterable<String> args) async {
     try {
       return await super.run(args) ?? ExitCodes.ok;
+    } on CliExit catch (e) {
+      if (e.message != null) context.err.writeln('ERRO ${e.message}');
+      return e.code;
     } on UsageException catch (e) {
       context.err
         ..writeln(e.message)

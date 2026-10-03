@@ -29,8 +29,15 @@ Legenda: [x] feito · [ ] pendente. Detalhes das decisões em `decisions.md`.
 - [x] Kit core inicial: 6 agentes, 8 comandos, 5 skills, 1 rule, templates
 - [x] `docs/adapters.md` completo; 119 testes; cobertura de `lib/src/core/` 98%
 
-## M3 — Specs e tarefas
-- [ ] `sdd new`, `tasks validate|graph|next`, `status`, `status set` (lock + escrita atômica)
+## M3 — Specs e tarefas ✅
+- [x] `sdd new` (slug ASCII, numeração de 4 dígitos, `prd.md` do template, `status.yaml` inicial)
+- [x] Parser de tarefas com erros por arquivo/campo; validação completa do DAG (D-025)
+- [x] `tasks validate`, `tasks graph [--mermaid]`, `tasks next [--json]` com tentativas e escalonamento (D-023)
+- [x] `status` (lista/detalhe/json, aviso de learnings) e `status set` com guardas (D-022)
+- [x] Escrita de `status.yaml` sob lock do SO + rename atômico (D-021)
+- [x] Templates de fase exportados para `.sdd/templates/` pelo sync (D-024)
+- [x] Correção: hash do `kit.lock` podia sair negativo (formatação de 64 bits)
+- [x] Fixture `app_with_spec` (DAG de 4 tarefas em 3 ondas); 167 testes; cobertura de `lib/src/core/` 99%
 
 ## M4 — Gates
 - [ ] `sdd check` escopado e completo, `owns` via git com regra de interferência (D-007), lcov,

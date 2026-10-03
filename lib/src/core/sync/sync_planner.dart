@@ -47,6 +47,7 @@ class SyncPlan {
 
 /// Diretórios onde o sync procura arquivos gerados órfãos.
 const managedDirs = [
+  '.sdd/templates',
   '.claude/agents',
   '.claude/skills',
   '.claude/rules',
@@ -60,6 +61,17 @@ const kitLockPath = '.sdd/kit.lock';
 const agentsMdPath = 'AGENTS.md';
 const claudeMdPath = 'CLAUDE.md';
 const agentsSectionTemplate = 'agents-md-section.md';
+
+/// Templates de fase exportados para `.sdd/templates/` (lidos pelos agentes,
+/// que não têm acesso ao kit instalado). Não renderizados: são preenchidos
+/// pelos agentes.
+const exportedTemplates = [
+  'analysis.md',
+  'spec.md',
+  'plan.md',
+  'task.md',
+  'review.md',
+];
 
 /// Calcula o que o `sdd sync` precisa escrever ou remover. Não escreve nada.
 class SyncPlanner {
@@ -97,6 +109,15 @@ class SyncPlanner {
       }
       for (final reg in output.hooks) {
         hookRegs[reg.path] = reg;
+      }
+    }
+    for (final name in exportedTemplates) {
+      final content = rendered.templates[name];
+      if (content != null) {
+        generated['.sdd/templates/$name'] = GeneratedFile.text(
+          '.sdd/templates/$name',
+          content,
+        );
       }
     }
     if (duplicates.isNotEmpty) {

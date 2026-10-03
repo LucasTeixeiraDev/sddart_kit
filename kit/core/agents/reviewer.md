@@ -20,7 +20,7 @@ Bash só para `sdd check`, `git diff` e `git log`, um comando por vez.
 {{sdd:dod_checklist}}
 4. `sdd check --spec <id> --json` verde.
 
-## Produza `review.md`
+## Produza `review.md` (a partir de `.sdd/templates/review.md`)
 - Achados com severidade `blocker`, `major` ou `minor` e `arquivo:linha`.
 - Seção **Lições candidatas**: padrões que evitariam os achados no futuro.
 

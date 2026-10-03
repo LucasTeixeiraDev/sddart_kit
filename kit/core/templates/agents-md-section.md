@@ -11,6 +11,7 @@ Fluxo: PRD → análise [aprovação humana] → spec + plano [aprovação human
 - Specs: `specs/NNNN-slug/` (`prd.md`, `analysis.md`, `spec.md`, `plan.md`, `tasks/`,
   `status.yaml`, `review.md`).
 - Estado: `status.yaml` é escrito só pelo CLI (`sdd status set <spec> <alvo> <valor>`).
+- Templates de fase: `.sdd/templates/` (gerados pelo sync).
 - Memória: `.sdd/memory/decisions.md` e `.sdd/memory/learnings.md`. Não carregue por padrão;
   os agentes que precisam leem.
 - Conteúdo do projeto: `.sdd/overrides/`. Nunca edite `.claude/`, `.cursor/` nem esta seção;

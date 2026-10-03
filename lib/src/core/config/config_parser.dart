@@ -101,7 +101,7 @@ class _ConfigReader {
     'dod': {'gates', 'coverage', 'traceability', 'checklist'},
     'dod.coverage': {'min', 'paths'},
     'dod.traceability': {'ac_pattern', 'test_tag_pattern'},
-    'execution': {'max_fix_attempts', 'escalate_to'},
+    'execution': {'max_fix_attempts', 'escalate_to', 'max_review_cycles'},
     'memory': {'learnings_warn_after'},
     'models': {'deep', 'standard', 'fast'},
     'hooks': {'format_on_edit'},
@@ -258,8 +258,15 @@ class _ConfigReader {
   ExecutionConfig? _execution() {
     final attempts = _int('execution.max_fix_attempts', min: 0);
     final escalateTo = _enum('execution.escalate_to', Tier.values);
-    if (attempts == null || escalateTo == null) return null;
-    return ExecutionConfig(maxFixAttempts: attempts, escalateTo: escalateTo);
+    final reviewCycles = _int('execution.max_review_cycles', min: 1);
+    if (attempts == null || escalateTo == null || reviewCycles == null) {
+      return null;
+    }
+    return ExecutionConfig(
+      maxFixAttempts: attempts,
+      escalateTo: escalateTo,
+      maxReviewCycles: reviewCycles,
+    );
   }
 
   Map<Tier, ModelMapping>? _models() {

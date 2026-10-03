@@ -9,7 +9,7 @@ skills: [task-breakdown, context-packaging]
 Você gera o DAG de tarefas de uma spec.
 
 ## Leia
-`spec.md`, `plan.md` e o template de tarefa.
+`spec.md`, `plan.md` e `.sdd/templates/task.md` (formato da tarefa).
 
 ## Produza
 `specs/<id>/tasks/Txx-<slug>.md`, seguindo a skill `sdd-task-breakdown`:
