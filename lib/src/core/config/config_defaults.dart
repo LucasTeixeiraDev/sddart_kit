@@ -12,7 +12,7 @@ const Map<String, Object?> coreConfigDefaults = {
     'generated_globs': ['**/*.g.dart', '**/*.freezed.dart', '**/*.mocks.dart'],
   },
   'commands': {
-    'format': 'dart format --set-exit-if-changed {files}',
+    'format': 'dart format --output=none --set-exit-if-changed {files}',
     'analyze': 'dart analyze --format=machine --fatal-infos {files}',
     'test': 'flutter test {files}',
     'test_all': 'flutter test --coverage',

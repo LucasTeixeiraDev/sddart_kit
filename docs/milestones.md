@@ -39,9 +39,15 @@ Legenda: [x] feito · [ ] pendente. Detalhes das decisões em `decisions.md`.
 - [x] Correção: hash do `kit.lock` podia sair negativo (formatação de 64 bits)
 - [x] Fixture `app_with_spec` (DAG de 4 tarefas em 3 ondas); 167 testes; cobertura de `lib/src/core/` 99%
 
-## M4 — Gates
-- [ ] `sdd check` escopado e completo, `owns` via git com regra de interferência (D-007), lcov,
-      rastreabilidade, saída compacta e `--json`
+## M4 — Gates ✅
+- [x] `sdd check --task` (format/analyze/test nos `owns` + verificação de `owns` via git) e `sdd check [--spec]` (DoD completo)
+- [x] Comandos sem shell, `{files}`, `--reporter json` automático, `test_all` com cobertura (D-026)
+- [x] Parsers de analyze (machine e humano), format, `flutter test --reporter json`, lcov e genérico (D-028)
+- [x] Cobertura por lcov filtrada por `dod.coverage.paths`; rastreabilidade de AC
+- [x] Tolerância de `owns` e marcação de interferência `INTF` (D-027)
+- [x] Saída compacta (`FAIL/INTF/PASS/SKIP`, `--max-lines`) e `--json` estável
+- [x] Teste manual com Flutter, git e cobertura reais; correção do `format` no modo completo
+- [x] 201 testes; cobertura de `lib/src/core/` 99%
 
 ## M5 — Stack pack e importação
 - [ ] Skills, rules, bricks, `sdd scaffold`, `sdd import scan`, `/sdd-import`

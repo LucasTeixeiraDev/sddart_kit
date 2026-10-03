@@ -1,5 +1,6 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
+import 'package:flutter_sdd/src/cli/commands/check_command.dart';
 import 'package:flutter_sdd/src/cli/commands/doctor_command.dart';
 import 'package:flutter_sdd/src/cli/commands/hook_command.dart';
 import 'package:flutter_sdd/src/cli/commands/init_command.dart';
@@ -30,6 +31,7 @@ class SddCommandRunner extends CommandRunner<int> {
     addCommand(NewCommand(context));
     addCommand(TasksCommand(context));
     addCommand(StatusCommand(context));
+    addCommand(CheckCommand(context));
     addCommand(DoctorCommand(context));
     addCommand(HookCommand(context));
   }

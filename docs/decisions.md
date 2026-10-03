@@ -193,3 +193,45 @@ specs junto com o template.
 `reads` aceita arquivos que são `owns` de dependências transitivas. `Pronto da tarefa` sem
 `sdd check --task` gera aviso. A spec pode ser referida por id completo, `0001` ou `1`.
 **Origem:** M3.
+
+## D-026 · Execução dos gates (2026-10)
+**Decisão:** os comandos do config são tokenizados (com suporte a aspas) e executados sem shell.
+`{files}` recebe os arquivos no modo tarefa e é removido no modo completo, exceto no `format`,
+que recebe `.` (sem caminhos o `dart format` lê do stdin). O gate `test` recebe
+`--reporter json` automaticamente. No modo completo, `test` usa `commands.test_all` quando
+`coverage` está nos gates. O padrão do `format` passa a ser
+`dart format --output=none --set-exit-if-changed {files}`.
+**Motivo:** verificado com ferramentas reais (Dart 3.13 / Flutter 3.47): a versão sem
+`--output=none` reescreve arquivos, e um gate não deve alterar o workspace (CI).
+O format-on-edit (D-012) cuida da formatação durante a edição.
+**Origem:** M4.
+
+## D-027 · Gate de `owns` e interferência (2026-10)
+**Decisão:** alterados = `git diff --name-only --relative HEAD` + `git ls-files --others
+--exclude-standard`. Ficam tolerados:
+- os `owns` da própria tarefa;
+- os `owns` de tarefas da mesma onda já iniciadas;
+- `specs/<spec>/**` (estado e artefatos do orquestrador);
+- `generated_globs`.
+
+Uma falha de analyze/test é interferência (`INTF`) quando o local ou a mensagem cita um
+arquivo, com ou sem `lib/`, de outra tarefa `in_progress`. `"interference": true` no JSON
+quando **todas** as falhas são interferência: o orquestrador não consome tentativa e
+rechecha ao fim da onda.
+**Limite conhecido:** é heurística; uma interferência que não cita o arquivo de origem vira
+falha comum.
+**Origem:** M4 (realiza D-007).
+
+## D-028 · Parsers verificados com saídas reais (2026-10)
+**Decisão:** os parsers são testados contra saídas reais capturadas em
+`test/fixtures/outputs/`:
+- analyze: `--format=machine`, com fallback para a saída humana do `flutter analyze`;
+- format: linhas `Changed`;
+- testes: eventos `--reporter json`.
+
+Falhas de carga (erro de compilação) chegam como um teste **não oculto** chamado
+`loading <arquivo>`, com a mensagem útil na segunda linha. Gates sem parser dedicado
+(custom_lint, dart_code_linter) extraem linhas com caminho `lib|test/...dart` ou as
+primeiras linhas da saída. A rastreabilidade é estática: busca `test_tag_pattern` em
+`<test_path>/**/*_test.dart`.
+**Origem:** M4.

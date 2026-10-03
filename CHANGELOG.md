@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.1.0 (em desenvolvimento)
+- M4: `sdd check` (modo tarefa e DoD completo), parsers de analyze/format/test/lcov,
+  rastreabilidade, verificação de `owns` com interferência; `format` padrão sem escrita.
 - M3: `sdd new`, `tasks validate|graph|next`, `status`, `status set` (lock + guardas),
   templates de fase em `.sdd/templates/`; correção do hash do `kit.lock`.
 - M2: kit core, adapters Claude/Cursor, `sdd sync [--check]`, AGENTS.md/CLAUDE.md gerenciados,

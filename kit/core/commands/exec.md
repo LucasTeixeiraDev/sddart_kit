@@ -12,8 +12,8 @@ nunca delegue este loop a um subagente.
    agente indicado (`sdd-implementer-<tier>`) **em paralelo**, passando só o caminho da tarefa.
 3. Para cada retorno: confirme com `sdd check --task <Txx> --json`.
    - verde → `sdd status set <spec> <Txx> done`
-   - falha causada por arquivo de outra tarefa em andamento (interferência) → não marque
-     falha; rechecar ao fim da onda.
+   - `"interference": true` no JSON (todas as falhas citam arquivos de outra tarefa em
+     andamento, linhas `INTF`) → não marque falha; recheque ao fim da onda.
    - falha → `sdd status set <spec> <Txx> failed`
 4. Ao fim da onda: recheque as tarefas com interferência e faça commit da onda.
 5. Tarefa `failed` sem tentativas: o `tasks next` indica o tier de escalonamento

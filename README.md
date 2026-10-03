@@ -24,6 +24,8 @@ Com um executável compilado (`dart compile exe bin/sdd.dart`), aponte para o ki
 | `sdd tasks next <spec>` | Tarefas prontas da menor onda, com agente/tier resolvidos |
 | `sdd status [<spec>]` | Progresso das specs abertas (ou detalhe de uma) |
 | `sdd status set <spec> <alvo> <valor>` | Única forma de mudar `status.yaml` (`T03 done`, `gate plan_approved`, `phase exec`, `review approved`) |
+| `sdd check --task <id> [--spec <id>]` | Gates nos arquivos `owns` da tarefa + verificação de `owns` via git |
+| `sdd check [--spec <id>] [--max-lines N]` | DoD completo: gates de `dod.gates`, cobertura (lcov) e rastreabilidade de AC |
 | `sdd doctor` | Verifica ambiente, config, kit, `kit.lock` e se o sync está em dia |
 | `sdd hook format\|guard-bash` | Hooks chamados pelos arquivos gerados (interno) |
 
@@ -37,4 +39,5 @@ Nunca edite `.claude/` ou `.cursor/` gerados.
 A spec pode ser indicada pelo id completo, `0001` ou `1`.
 
 Flags globais: `--json`, `--verbose`, `--kit-path <dir>`, `--version`.
+Saída do `check`: só falhas (`FAIL`), interferências (`INTF`) e o resumo; nunca o log bruto.
 Exit codes: `0` ok, `1` falha de gate/validação, `2` erro de uso/config.
