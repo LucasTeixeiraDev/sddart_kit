@@ -18,6 +18,9 @@ const formatHookCommand = 'sdd hook format';
 /// Prefixo que identifica entradas de hook do sdd em arquivos do usuário.
 const sddHookPrefix = 'sdd hook ';
 
+String guardWriteCommand(List<String> allow) =>
+    'sdd hook guard-write ${allow.map((a) => "--allow '$a'").join(' ')}';
+
 String guardBashCommand(List<String> allow) =>
     'sdd hook guard-bash ${allow.map((a) => "--allow '$a'").join(' ')}';
 

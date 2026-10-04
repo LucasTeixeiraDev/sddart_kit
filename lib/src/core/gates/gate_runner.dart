@@ -69,7 +69,7 @@ class GateRunner {
           await _commandGate('test', files: testFiles),
           running,
         ),
-      await _ownsGate(spec, task, others),
+      await _ownsGate(spec, task, others, running),
     ];
     return CheckReport(
       mode: 'task',
@@ -259,6 +259,7 @@ class GateRunner {
     SpecDir spec,
     TaskSpec task,
     List<TaskSpec> others,
+    List<TaskSpec> running,
   ) async {
     final repo = await processRunner.run('git', [
       'rev-parse',
@@ -302,13 +303,20 @@ class GateRunner {
             !generated.any((g) => g.matches(file)))
           file,
     ];
-    if (outside.isEmpty) {
-      return GateResult.pass('owns', note: '${changed.length} alterados');
-    }
+    final mine = changed.where(task.owns.contains).length;
+    final note = '$mine da tarefa · ${changed.length} no total';
+    if (outside.isEmpty) return GateResult.pass('owns', note: note);
+    // Com tarefas da onda ainda rodando, um arquivo sem dono pode ser delas:
+    // interferência até a rechecagem do fim da onda (D-038).
+    final suspects = running.map((t) => t.id).join(',');
     return GateResult.fail('owns', [
       for (final f in outside)
-        GateFailure('alterado fora de owns', location: f),
-    ]);
+        GateFailure(
+          'alterado fora de owns',
+          location: f,
+          interferenceWith: suspects.isEmpty ? null : suspects,
+        ),
+    ], note: note);
   }
 
   /// Marca falhas que citam arquivos de tarefas em andamento (heurística:

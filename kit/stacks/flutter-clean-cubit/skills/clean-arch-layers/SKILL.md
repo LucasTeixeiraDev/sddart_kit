@@ -18,6 +18,9 @@ Fluxo: `Cubit → UseCase → Repository (contrato) → RepositoryImpl → DataS
 - domain não importa Flutter, Dio nem nada de `data/` ou `presentation/`.
 - presentation não conhece datasource nem `RepositoryImpl`; recebe usecases por injeção.
 - DTO (data) ≠ entidade (domain): o repository converte.
+- Helpers puros de apresentação (formatadores, máscaras) em `presentation/formatters/`.
+- Com very_good_analysis, igualdade por valor (`==`/`hashCode`) exige `@immutable`
+  (`package:meta` no pubspec); sem `meta`, prefira não sobrescrever `==` em entidades.
 - Testes espelham o caminho em `{{sdd:project.test_path}}/features/<feature>/...`.
 - Bricks: `feature` (pastas), `failure`, `usecase`, `repository`, `datasource`, `cubit`
-  (`sdd scaffold <brick> --vars feature=<f> name=<n>`).
+  (`sdd scaffold <brick> --vars feature=<f> --vars name=<n>`).

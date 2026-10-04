@@ -25,5 +25,7 @@ description: Testes com bloc_test e mocktail, nome de teste com a tag [AC-xx] pa
 - Repository: mocke o datasource; um teste por exception mapeada (`Err` esperado) e um para
   a não mapeada (`Unexpected`).
 - Usecase: verifique delegação (`verify(() => repository.x()).called(1)`) e o `Result`.
+- very_good_analysis: strings com `$` literal (ex.: `R$`) precisam ser raw (`r'R$ 1,00'`);
+  em `group`, prefira `for` a `forEach` para gerar testes.
 - Um arquivo de teste por arquivo de produção, espelhando o caminho em
   `{{sdd:project.test_path}}/`.

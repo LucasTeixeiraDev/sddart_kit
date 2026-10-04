@@ -137,6 +137,7 @@ class KitLoader {
       readonly: base.readonly,
       skills: [...base.skills, ...added.where((x) => !base.skills.contains(x))],
       bashAllow: base.bashAllow,
+      writeAllow: base.writeAllow,
     );
   }
 
@@ -299,6 +300,10 @@ class KitLoader {
       _issues.add('${s.path}: bash_allow exige a tool bash');
     }
     final skills = _stringList(s, 'skills') ?? const [];
+    final writeAllow = _stringList(s, 'write_allow') ?? const [];
+    if (writeAllow.isNotEmpty && !readonly) {
+      _issues.add('${s.path}: write_allow só faz sentido em agente readonly');
+    }
     if (description == null || tier == null || toolNames == null) return null;
     return KitAgent(
       name: s.name,
@@ -312,6 +317,7 @@ class KitLoader {
       readonly: readonly,
       skills: skills,
       bashAllow: bashAllow,
+      writeAllow: writeAllow,
     );
   }
 

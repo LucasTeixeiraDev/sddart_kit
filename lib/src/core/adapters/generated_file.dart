@@ -78,6 +78,9 @@ String generatedMarkdown(
 bool hasGeneratedMarker(String content) =>
     content.split('\n').take(40).any((l) => l.contains(generatedMarker));
 
-/// Se o tipo de arquivo comporta o aviso (senão, só o manifesto o identifica).
+/// Se o arquivo leva o aviso (senão, só o manifesto o identifica).
+/// Arquivos em `.sdd/` (templates exportados) não levam aviso porque são
+/// copiados pelos agentes para as specs (D-024).
 bool supportsMarker(String path) =>
+    !path.startsWith('.sdd/') &&
     const {'.md', '.mdc'}.contains(p.extension(path));

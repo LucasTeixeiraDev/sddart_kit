@@ -121,6 +121,11 @@ void main() {
         ['lib/core/di/injector.dart', 'lib/extra.dart'],
       );
 
+      // T03 rodando: arquivos sem dono ficam como interferência até o fim
+      // da onda.
+      expect(owns.failures.every((f) => f.interferenceWith == 'T03'), isTrue);
+      expect(owns.note, '1 da tarefa · 6 no total');
+
       // Sem T03 iniciada, o arquivo dela também é reportado.
       final strict = await gates().runTask(load(), load().task('T02')!);
       expect([

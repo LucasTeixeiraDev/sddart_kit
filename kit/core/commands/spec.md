@@ -12,3 +12,6 @@ O argumento após o comando é o id da spec.
    trade-off e o que ficou fora de escopo. **Pare.**
 5. Ajustes pedidos pelo humano: redispare o architect com o pedido (não edite à mão).
 6. Com aprovação explícita: `sdd status set <spec> gate plan_approved`.
+
+Se o ambiente impedir o agente de gravar e ele devolver o conteúdo dos arquivos, grave-o
+você mesmo, sem alterar.

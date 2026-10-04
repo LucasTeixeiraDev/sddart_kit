@@ -43,7 +43,7 @@ pelo manifesto `.sdd/generated.json`.
 
 | Canônico (`kit/`) | Claude (target `claude`) | Cursor (target `cursor`) |
 |---|---|---|
-| `agents/<n>.md` | `.claude/agents/sdd-<n>.md` com `tools` reais, `model` do tier, `skills` prefixadas e, se `bash_allow`, hook `PreToolUse` → `sdd hook guard-bash` | `.cursor/agents/sdd-<n>.md` com `model` do Cursor e `readonly` |
+| `agents/<n>.md` | `.claude/agents/sdd-<n>.md` com `tools` reais, `model` do tier, `skills` prefixadas; `bash_allow` → hook `PreToolUse` `sdd hook guard-bash`; `write_allow` → tool `Write` + hook `Write\|Edit` `sdd hook guard-write` | `.cursor/agents/sdd-<n>.md` com `model` do Cursor e `readonly` (agente com `write_allow` devolve o conteúdo ao orquestrador) |
 | `tier_variants` | um agente por tier: `sdd-<n>-<tier>` | idem |
 | `skills/<n>/` | `.claude/skills/sdd-<n>/` | nada (lê `.claude/skills/`) ou `.cursor/skills/` (ver regras) |
 | `commands/<n>.md` | skill manual `.claude/skills/sdd-<n>/SKILL.md` (`disable-model-invocation: true`, `argument-hint`) | idem skills |

@@ -11,3 +11,6 @@ O argumento após o comando é o id da spec.
 4. Confirme você mesmo: `sdd tasks validate <spec>`. Erros → devolva ao planner (máx. 2 vezes;
    depois pare e mostre ao humano). Avisos de AC sem tarefa também voltam ao planner.
 5. Mostre `sdd tasks graph <spec>` e siga para `/sdd-exec` se estiver em `/sdd-run`.
+
+Se o ambiente impedir o agente de gravar e ele devolver o conteúdo dos arquivos, grave-o
+você mesmo, sem alterar.

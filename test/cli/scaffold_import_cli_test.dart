@@ -81,6 +81,17 @@ void main() {
       expect(cli.out.toString(), contains('failure: 2 criados · 1 mantidos'));
     });
 
+    test('pares chave=valor soltos após o brick valem como --vars', () async {
+      final generator = FakeBrickGenerator(const []);
+      final cli = await project(generator);
+      expect(
+        await cli.run(['scaffold', 'usecase', '--vars', 'feature=a', 'name=b']),
+        ExitCodes.ok,
+      );
+      expect(generator.vars, containsPair('name', 'b'));
+      expect(generator.vars, containsPair('feature', 'a'));
+    });
+
     test('--task avisa arquivos fora dos owns; json', () async {
       final generator = FakeBrickGenerator(const [
         BrickFile(
@@ -139,6 +150,10 @@ void main() {
       expect(cli.err.toString(), contains('faltam variáveis feature'));
       expect(
         await cli.run(['scaffold', 'failure', '--vars', 'x']),
+        ExitCodes.usage,
+      );
+      expect(
+        await cli.run(['scaffold', 'failure', 'usecase']),
         ExitCodes.usage,
       );
       expect(

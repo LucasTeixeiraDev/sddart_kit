@@ -25,3 +25,4 @@ Rode `sdd tasks validate <id>` e corrija até passar. Avisos de AC sem tarefa de
 
 ## Retorno
 `<n> tarefas · <n> ondas · validate ok`
+Se não conseguir concluir: `falhou · <motivo em 1 linha>`.

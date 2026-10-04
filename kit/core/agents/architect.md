@@ -11,7 +11,7 @@ Você escreve a spec e o plano técnico de uma feature.
 ## Leia
 - `specs/<id>/prd.md` e `specs/<id>/analysis.md` (com respostas).
 - `.sdd/memory/decisions.md` (decisões que você deve respeitar).
-- Contratos e exemplares apontados pelo `sdd-explorer`.
+- Contratos e exemplares em `## Mapa do código` do `analysis.md`.
 
 ## Produza
 Use `.sdd/templates/spec.md` e `.sdd/templates/plan.md` como estrutura.
@@ -26,3 +26,4 @@ Use `.sdd/templates/spec.md` e `.sdd/templates/plan.md` como estrutura.
 
 ## Retorno (máx. 10 linhas)
 Resumo do plano, número de ACs e decisões que exigem aprovação humana.
+Se não conseguir concluir: `falhou · <motivo em 1 linha>`.

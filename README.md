@@ -64,7 +64,7 @@ de novo: ele continua da fase em que parou.
 | `sdd scaffold <brick> [--vars k=v ...] [--task <id>]` | Aplica um brick mason do stack (nunca sobrescreve) |
 | `sdd import scan <caminho>` | Inventário somente leitura de agentes, skills, rules e comandos existentes |
 | `sdd doctor` | Ambiente (Flutter, Dart, git, `sdd` no PATH), config, `kit.lock` e sync em dia |
-| `sdd hook format\|guard-bash` | Hooks chamados pelos arquivos gerados (uso interno) |
+| `sdd hook format\|guard-bash\|guard-write` | Hooks chamados pelos arquivos gerados (uso interno) |
 
 - **Flags globais:** `--json` (saída estável para agentes), `--verbose`, `--kit-path <dir>`, `--version`.
 - **Spec:** pode ser indicada pelo id completo, `0001` ou `1`.
@@ -207,8 +207,9 @@ repositório, Claude ou Cursor), use `/sdd-import <caminho>`.
   - Com Claude entre os targets, o hook vai só em `.claude/settings.json`, porque o Cursor
     também executa esses hooks. Sem Claude, vai em `.cursor/hooks.json`.
   - O merge mexe só nas entradas do sdd e preserva o resto do arquivo.
-- **Guard do reviewer (Claude):** um hook `PreToolUse` no próprio agente bloqueia Bash fora
-  de `sdd check`, `git diff` e `git log`.
+- **Guard do reviewer (Claude):** hooks `PreToolUse` no próprio agente bloqueiam Bash fora
+  de `sdd check`, `git diff` e `git log`, e gravação fora de `specs/*/review.md`
+  (`write_allow`).
   - Hooks de agentes do projeto só rodam depois que o workspace é marcado como confiável
     (não em `claude -p`). Por isso a regra também está no prompt.
   - No Cursor, o reviewer é `readonly`.
@@ -269,7 +270,7 @@ config_defaults:                                 # mesmo formato do config.yaml
 ```
 
 - **Formatos canônicos:**
-  - agente: `description`, `tier`, `tools`, `readonly`, `skills`, `bash_allow`;
+  - agente: `description`, `tier`, `tools`, `readonly`, `skills`, `bash_allow`, `write_allow`;
   - skill: `description` no `SKILL.md`;
   - rule: `description`, `globs`, `always`;
   - comando: `description`, `args`.
@@ -291,6 +292,7 @@ dart compile exe bin/sdd.dart
 - `docs/milestones.md`: progresso do desenvolvimento.
 - `docs/decisions.md`: decisões tomadas.
 - `docs/adapters.md`: formatos verificados de Claude Code e Cursor, com fonte e data.
+- `docs/dogfooding.md`: fluxo completo real, atritos encontrados e ajustes.
 
 ## Licença
 

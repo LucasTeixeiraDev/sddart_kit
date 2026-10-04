@@ -10,7 +10,7 @@ vars:
     prompt: Feature?
   name:
     type: string
-    description: Nome do datasource (padrão = feature)
+    description: Nome base sem sufixo (padrão = feature; wallet → wallet_remote_data_source.dart)
     default: "{feature}"
   method:
     type: string

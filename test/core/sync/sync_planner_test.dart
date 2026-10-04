@@ -140,6 +140,21 @@ void main() {
     },
   );
 
+  test('template exportado alterado no kit é regravado, não conflito', () {
+    final p = SampleProject()
+      ..write('.sdd/overrides/templates/plan.md', '# Plano v1\n');
+    sync(p);
+    expect(p.read('.sdd/templates/plan.md'), '# Plano v1\n');
+    p.write('.sdd/overrides/templates/plan.md', '# Plano v2\n');
+    final result = sync(p);
+    expect(result.of(SyncAction.conflict), isEmpty);
+    expect(p.read('.sdd/templates/plan.md'), '# Plano v2\n');
+    // Template exportado editado à mão e fora do manifesto: aí sim é conflito.
+    p.fs.file('$memProjectPath/.sdd/generated.json').deleteSync();
+    p.write('.sdd/templates/plan.md', 'meu');
+    expect(paths(plan(p), SyncAction.conflict), ['.sdd/templates/plan.md']);
+  });
+
   test('nova versão do sdd regrava cabeçalhos e lock', () {
     final p = SampleProject();
     sync(p);

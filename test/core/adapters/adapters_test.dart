@@ -89,5 +89,6 @@ void main() {
     expect(hasGeneratedMarker('# meu agente'), isFalse);
     expect(supportsMarker('a/b.mdc'), isTrue);
     expect(supportsMarker('a/run.sh'), isFalse);
+    expect(supportsMarker('.sdd/templates/plan.md'), isFalse);
   });
 }

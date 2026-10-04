@@ -336,3 +336,34 @@ No Cursor, a doc não fala do texto após `/skill`; o texto neutro cobre os dois
 **Decisão:** o `init` interativo pergunta se o format-on-edit deve ser ligado (padrão: não).
 `--yes` mantém desligado.
 **Origem:** M6.
+
+## D-038 · Arquivo sem dono durante a onda é interferência (2026-10)
+**Decisão:** no `check --task`, um arquivo alterado fora dos `owns` de todas as tarefas
+conhecidas é marcado como interferência (`INTF`, atribuído às tarefas da onda ainda
+`in_progress`). Ele só vira falha na rechecagem do fim da onda, quando não há mais ninguém
+rodando. A nota do gate passa a separar "N da tarefa · M no total".
+**Motivo:** no dogfooding, um arquivo gerado por outra tarefa reprovou a T04 (F13).
+**Origem:** M7 (refina D-027).
+
+## D-039 · Agente readonly com escrita restrita (`write_allow`) (2026-10)
+**Decisão:** o campo canônico `write_allow: [globs]` só vale para agentes `readonly`.
+- **No Claude:** acrescenta a tool `Write` e um hook `PreToolUse` (matcher `Write|Edit`) →
+  `sdd hook guard-write --allow <glob>`, que bloqueia (exit 2) qualquer caminho fora dos
+  globs, relativos ao `cwd` do payload.
+- **No Cursor:** o agente continua `readonly` (D-005) e devolve o conteúdo para o
+  orquestrador gravar.
+- **Reviewer:** `write_allow: ["specs/*/review.md"]`.
+**Motivo:** o reviewer precisava gravar o `review.md`, mas não tinha `Write` (F15).
+**Origem:** M7.
+
+## D-040 · Templates exportados identificados só pelo manifesto (2026-10)
+**Decisão:** `supportsMarker` exclui `.sdd/` de fato. A correção do D-024 não tinha sido
+aplicada: uma substituição sem verificação falhou em silêncio. Há teste de regressão para
+template alterado entre dois syncs.
+**Lição de processo:** as edições por script agora verificam se o trecho existe (`assert`).
+**Origem:** M7 (F18).
+
+## D-041 · Testes deste repositório (2026-10)
+**Decisão:** `dart_test.yaml` restringe os caminhos a `test/cli` e `test/core`. As fixtures
+de app (`test/fixtures/dogfood_app`) têm testes próprios que só rodam dentro do app.
+**Origem:** M7.

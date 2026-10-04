@@ -1,6 +1,9 @@
 # Changelog
 
 ## 0.1.0 (em desenvolvimento)
+- M7: dogfooding com fluxo completo; `write_allow` + `sdd hook guard-write` (reviewer grava
+  só o `review.md`); arquivo sem dono vira interferência durante a onda; `scaffold` aceita
+  pares `k=v` soltos; correção de conflito de templates no `sync`; ajustes de kit.
 - M6: versão final dos comandos `/sdd-*` (exec, review, close, run), fluxo de memória,
   pergunta de format-on-edit no `init`, README completo.
 - M5: stack pack `flutter-clean-cubit` (skills, rules, extensões de agentes, 6 bricks),

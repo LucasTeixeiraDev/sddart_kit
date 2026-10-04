@@ -51,6 +51,7 @@ class KitAgent extends KitItem {
     this.tierVariants = const [],
     this.skills = const [],
     this.bashAllow = const [],
+    this.writeAllow = const [],
   });
 
   final Tier tier;
@@ -63,6 +64,11 @@ class KitAgent extends KitItem {
 
   /// Prefixos de comando Bash permitidos; vazio = sem restrição por hook.
   final List<String> bashAllow;
+
+  /// Globs (relativos à raiz) que um agente `readonly` pode gravar, ex.:
+  /// `specs/*/review.md`. No Claude vira a tool Write + hook de guarda; no
+  /// Cursor o agente continua readonly e devolve o conteúdo (D-039).
+  final List<String> writeAllow;
 }
 
 /// Arquivo de apoio de uma skill (caminho relativo à pasta da skill).

@@ -15,8 +15,16 @@ description: Como quebrar um plano em tarefas contract-first com ondas, owns sem
   o mesmo arquivo.
 - `reads` mínimo: só contratos e arquivos realmente necessários.
 - `exemplar` sempre que houver um arquivo que já implementa o mesmo padrão.
-- `brick` quando um brick do stack gerar o esqueleto.
+- `brick` só quando **todos** os arquivos que o brick gera estiverem em `owns` (um brick por
+  tarefa). Se o brick gerar arquivos de camadas de ondas diferentes, não o use: cite o
+  exemplar. Em `## Detalhes`, escreva o comando completo com `--vars` repetido.
 - `acceptance`: ACs cobertos. Todo AC da spec deve aparecer em ao menos uma tarefa.
+
+## Tarefas de correção (`Txx-fix-*`)
+- Nova onda (maior onda + 1), `depends_on` nas tarefas cujos arquivos corrige.
+- O achado do `review.md` (arquivo:linha e motivo) vai em `## Detalhes`.
+- O `exemplar` precisa seguir o padrão **pedido** pela correção, nunca o que está sendo
+  corrigido; sem exemplar adequado, omita-o e descreva o padrão nos detalhes.
 
 ## Tier pelo risco
 - `deep`: contratos, fluxos complexos, concorrência, migração.

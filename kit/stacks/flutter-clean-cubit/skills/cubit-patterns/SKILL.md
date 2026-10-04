@@ -6,7 +6,8 @@ description: Padrões de Cubit - estados selados, emissões, injeção de usecas
 
 - Um cubit por tela/fluxo em `presentation/cubit/`, com estado em `<nome>_state.dart` (`part of`).
 - Estado `sealed`: `<Nome>Initial`, `<Nome>Loading`, `<Nome>Success(...)`, `<Nome>Error(failure)`.
-  Estados sem dados são `const` (igualdade por identidade nos testes).
+  Estados sem dados são `const` (igualdade por identidade nos testes). Se o cubit carrega
+  no construtor, `Initial` é dispensável: comece em `Loading`.
 - Recebe **usecases** no construtor (nunca repository nem datasource).
 - Métodos públicos são intenções do usuário (`login()`, `refresh()`); retornam `Future<void>`.
 - Emissão: `Loading` → resultado do usecase via `switch` exaustivo no `Result`.

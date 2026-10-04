@@ -1,0 +1,2 @@
+# test/fixtures contém apps de exemplo com testes próprios: não rodar aqui.
+paths: [test/cli, test/core]

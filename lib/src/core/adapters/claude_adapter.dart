@@ -21,6 +21,13 @@ class ClaudeAdapter implements ToolAdapter {
     AbstractTool.bash: ['Bash'],
   };
 
+  static Map<String, Object?> _guard(String matcher, String command) => {
+    'matcher': matcher,
+    'hooks': [
+      {'type': 'command', 'command': command},
+    ],
+  };
+
   @override
   AdapterOutput generate(KitBundle bundle, SddConfig config) {
     final files = <GeneratedFile>[];
@@ -37,22 +44,23 @@ class ClaudeAdapter implements ToolAdapter {
               {
                 'name': name,
                 'description': variantDescription(agent, tier),
-                'tools': [for (final t in agent.tools) ..._toolNames[t]!],
+                'tools': [
+                  for (final t in agent.tools) ..._toolNames[t]!,
+                  if (agent.writeAllow.isNotEmpty) 'Write',
+                ],
                 'model': model.value,
                 if (agent.skills.isNotEmpty)
                   'skills': [for (final s in agent.skills) generatedName(s)],
-                if (agent.bashAllow.isNotEmpty)
+                if (agent.bashAllow.isNotEmpty || agent.writeAllow.isNotEmpty)
                   'hooks': {
                     'PreToolUse': [
-                      {
-                        'matcher': 'Bash',
-                        'hooks': [
-                          {
-                            'type': 'command',
-                            'command': guardBashCommand(agent.bashAllow),
-                          },
-                        ],
-                      },
+                      if (agent.bashAllow.isNotEmpty)
+                        _guard('Bash', guardBashCommand(agent.bashAllow)),
+                      if (agent.writeAllow.isNotEmpty)
+                        _guard(
+                          'Write|Edit',
+                          guardWriteCommand(agent.writeAllow),
+                        ),
                     ],
                   },
               },

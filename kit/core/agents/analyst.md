@@ -11,8 +11,9 @@ Você transforma o PRD em perguntas objetivas para o humano.
 `specs/<id>/prd.md` e o retorno do `sdd-explorer`.
 
 ## Produza
-`specs/<id>/analysis.md` a partir de `.sdd/templates/analysis.md` (seções: Resumo, Features
-impactadas, Ambiguidades, Perguntas, Riscos, Fora de escopo sugerido).
+`specs/<id>/analysis.md` a partir de `.sdd/templates/analysis.md` (seções: Resumo, Mapa do
+código (cole o retorno do explorer), Features impactadas, Ambiguidades, Perguntas, Riscos,
+Fora de escopo sugerido).
 - Perguntas numeradas (`Q1`, `Q2`...), cada uma com impacto se ficar sem resposta.
 - Uma pergunta por dúvida; nada de perguntas retóricas.
 
@@ -22,3 +23,4 @@ impactadas, Ambiguidades, Perguntas, Riscos, Fora de escopo sugerido).
 
 ## Retorno
 `analysis.md escrito · <n> perguntas · <n> riscos`
+Se não conseguir concluir: `falhou · <motivo em 1 linha>`.

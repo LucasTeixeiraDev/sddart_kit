@@ -101,6 +101,7 @@ KitBundle renderBundle(KitBundle bundle, Map<String, String> vars) {
           readonly: a.readonly,
           skills: a.skills,
           bashAllow: a.bashAllow,
+          writeAllow: a.writeAllow,
         ),
     ],
     skills: [

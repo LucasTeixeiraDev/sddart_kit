@@ -2,7 +2,7 @@
 ---
 name: sdd-judge
 description: "Revisa sem alterar."
-tools: [Read, Bash]
+tools: [Read, Bash, Write]
 model: opus
 hooks:
   PreToolUse:
@@ -10,6 +10,10 @@ hooks:
       hooks:
         - type: command
           command: "sdd hook guard-bash --allow 'sdd check'"
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "sdd hook guard-write --allow 'specs/*/review.md'"
 ---
 <!-- gerado por sdd v1.2.3 — não edite; use .sdd/overrides/ ou o kit -->
 

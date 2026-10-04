@@ -2,6 +2,7 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_sdd/src/cli/sdd_command.dart';
 import 'package:flutter_sdd/src/cli/sdd_context.dart';
 import 'package:flutter_sdd/src/core/hooks/guard_bash.dart';
+import 'package:flutter_sdd/src/core/hooks/guard_write.dart';
 import 'package:flutter_sdd/src/core/hooks/hook_input.dart';
 import 'package:flutter_sdd/src/infra/exit_codes.dart';
 
@@ -10,6 +11,7 @@ class HookCommand extends Command<int> {
   HookCommand(SddContext context) {
     addSubcommand(_FormatHook(context));
     addSubcommand(_GuardBashHook(context));
+    addSubcommand(_GuardWriteHook(context));
   }
 
   @override
@@ -71,6 +73,35 @@ class _GuardBashHook extends SddCommand {
     final reason = guardBash(
       input.command,
       argResults!['allow'] as List<String>,
+    );
+    if (reason == null) return ExitCodes.ok;
+    context.err.writeln(reason);
+    return _blockExitCode;
+  }
+}
+
+class _GuardWriteHook extends SddCommand {
+  _GuardWriteHook(super.context) {
+    argParser.addMultiOption(
+      'allow',
+      help: 'Glob (relativo à raiz) que pode ser gravado (repetível).',
+    );
+  }
+
+  @override
+  String get name => 'guard-write';
+
+  @override
+  String get description => 'Bloqueia Write/Edit fora dos globs --allow.';
+
+  @override
+  Future<int> run() async {
+    final input = HookInput.parse(await context.readStdin());
+    final root = input.data['cwd'] as String? ?? context.workingDirectory;
+    final reason = guardWrite(
+      input.filePath,
+      argResults!['allow'] as List<String>,
+      root: root,
     );
     if (reason == null) return ExitCodes.ok;
     context.err.writeln(reason);

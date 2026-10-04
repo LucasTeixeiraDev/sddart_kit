@@ -7,8 +7,10 @@ tier: standard
 agent: implementer
 owns:
   - <arquivo>
-reads: []
-acceptance: []
+reads: []          # contratos que a tarefa lê (existem ou são owns de dependências)
+acceptance: []     # ACs da spec cobertos por testes desta tarefa
+# exemplar: lib/...  # opcional: arquivo existente a imitar
+# brick: failure     # opcional: só se TODOS os arquivos gerados estiverem em owns
 ---
 ## Objetivo
 

@@ -1,5 +1,6 @@
 import 'package:flutter_sdd/flutter_sdd.dart';
 import 'package:flutter_sdd/src/core/hooks/guard_bash.dart';
+import 'package:flutter_sdd/src/core/hooks/guard_write.dart';
 import 'package:flutter_sdd/src/core/hooks/hook_input.dart';
 import 'package:test/test.dart';
 
@@ -79,6 +80,41 @@ void main() {
       'git diff',
     ], '{"tool_name":"Read","tool_input":{}}');
     expect(other, ExitCodes.ok);
+  });
+
+  group('guardWrite', () {
+    const allow = ['specs/*/review.md'];
+    test('permite só os globs, relativos à raiz', () {
+      expect(
+        guardWrite('/r/specs/0001-x/review.md', allow, root: '/r'),
+        isNull,
+      );
+      expect(guardWrite('specs/0002-y/review.md', allow, root: '/r'), isNull);
+      expect(guardWrite(null, allow, root: '/r'), isNull);
+      expect(
+        guardWrite('/r/lib/a.dart', allow, root: '/r'),
+        contains('só pode gravar specs/*/review.md (tentou lib/a.dart)'),
+      );
+      expect(
+        guardWrite('/fora/specs/1/review.md', allow, root: '/r'),
+        isNotNull,
+      );
+    });
+  });
+
+  test('guard-write: usa o cwd do payload e bloqueia com exit 2', () async {
+    final (code, err, _) = await runHook([
+      'guard-write',
+      '--allow',
+      'specs/*/review.md',
+    ], '{"cwd":"/proj","tool_input":{"file_path":"/proj/lib/x.dart"}}');
+    expect(code, 2);
+    expect(err, contains('tentou lib/x.dart'));
+    final (ok, _, _) = await runHook(
+      ['guard-write', '--allow', 'specs/*/review.md'],
+      '{"cwd":"/proj","tool_input":{"file_path":"/proj/specs/0001-a/review.md"}}',
+    );
+    expect(ok, ExitCodes.ok);
   });
 
   test('format: roda dart format só em .dart existente', () async {

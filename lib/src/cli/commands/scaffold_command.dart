@@ -33,14 +33,18 @@ class ScaffoldCommand extends SddCommand {
     final project = await requireProject();
     final bundle = requireBundle(project);
     final available = bundle.bricks.map((b) => b.name).join(', ');
-    if (rest.length != 1) {
+    // Pares `chave=valor` soltos após o brick também valem como --vars
+    // (forma comum em instruções escritas por LLMs).
+    final names = rest.where((a) => !a.contains('=')).toList();
+    final loosePairs = rest.where((a) => a.contains('='));
+    if (names.length != 1) {
       throw UsageException('informe um brick ($available)', usage);
     }
-    final brick = bundle.brick(rest.single);
+    final brick = bundle.brick(names.single);
     if (brick == null) {
       throw CliExit(
         ExitCodes.usage,
-        'brick "${rest.single}" não existe (disponíveis: $available)',
+        'brick "${names.single}" não existe (disponíveis: $available)',
       );
     }
 
@@ -62,7 +66,10 @@ class ScaffoldCommand extends SddCommand {
           'test_path': config.project.testPath,
           ...config.scaffoldVars,
         },
-        cliVars: parseVarArgs(argResults!['vars'] as List<String>),
+        cliVars: parseVarArgs([
+          ...argResults!['vars'] as List<String>,
+          ...loosePairs,
+        ]),
       );
     } on ScaffoldException catch (e) {
       throw CliExit(ExitCodes.usage, e.message);

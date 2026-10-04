@@ -15,3 +15,6 @@ O argumento após o comando é o id da spec (ex.: `0042-login-biometria`, `0042`
    `sdd status set <spec> gate analysis_approved`.
 
 Nunca aprove o gate sem confirmação explícita do humano.
+
+Se o ambiente impedir o agente de gravar e ele devolver o conteúdo dos arquivos, grave-o
+você mesmo, sem alterar.

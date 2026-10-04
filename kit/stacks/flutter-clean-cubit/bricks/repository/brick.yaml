@@ -10,7 +10,7 @@ vars:
     prompt: Feature?
   name:
     type: string
-    description: Nome do repository (padrão = feature)
+    description: Nome base sem sufixo (padrão = feature; wallet → wallet_repository.dart)
     default: "{feature}"
   method:
     type: string

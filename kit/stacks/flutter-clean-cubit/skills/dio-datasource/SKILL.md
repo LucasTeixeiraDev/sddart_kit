@@ -12,6 +12,9 @@ description: Datasources HTTP com Dio (contrato + implementação, DTOs, excepti
   - de negócio: traduza o código/erro do backend para exceptions próprias da feature
     (`UserNotFoundException`, `BlockedUserException`) em `data/datasources/`.
 - Sem `try/catch` genérico no datasource; sem lógica de retry escondida.
+- `fromJson` valida o corpo e lança `FormatException` (uma `Exception`) quando o formato é
+  inválido; nunca deixe `as` gerar `TypeError` (um `Error` não é capturado pelo repository e
+  quebraria o fluxo de erro).
 - DTO com `fromJson`/`toJson` explícitos (ou codegen, se o projeto usa: veja `commands.codegen`).
 
 ## Realtime (SignalR)

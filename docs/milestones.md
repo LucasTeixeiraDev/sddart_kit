@@ -68,5 +68,16 @@ Legenda: [x] feito · [ ] pendente. Detalhes das decisões em `decisions.md`.
 - [x] `pub global activate --source path` validado num PUB_CACHE isolado; `dart compile exe` ok
 - [x] 220 testes; cobertura de `lib/src/core/` 99%
 
-## M7 — Dogfooding
-- [ ] Fixture realista de ponta a ponta (também como teste de integração)
+## M7 — Dogfooding ✅
+- [x] App de referência `loja_app` (fixture `dogfood_app`) com feature exemplar `profile`
+- [x] Fluxo completo da spec "Saldo da carteira" com subagentes reais por tier: 7+1 tarefas em 5 ondas, 2 ciclos de revisão, DoD verde
+- [x] 20 atritos registrados em `docs/dogfooding.md`; 17 corrigidos, 4 propostas abertas (F7, F9/F10, F11, F20)
+- [x] Bugs corrigidos: templates em conflito no sync (D-040), reviewer sem escrita (D-039), `--vars` (F12), owns com tarefas paralelas (D-038)
+- [x] Teste de integração do contrato do orquestrador com os artefatos reais (`dogfood_flow_test.dart`)
+- [x] 225 testes; cobertura de `lib/src/core/` 99%
+
+## Próximos passos (fora dos milestones)
+- [ ] Decidir as propostas abertas do dogfooding (F7, F9/F10, F11, F20)
+- [ ] Kit embutido no binário AOT (D-001)
+- [ ] Validar o comando do `dart_code_linter`, o contrato do `Result` no app real e o uso no Cursor
+- [ ] LICENSE

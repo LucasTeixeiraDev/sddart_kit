@@ -27,6 +27,7 @@ void main() {
     final judge = bundle.agents.first;
     expect(judge.readonly, isTrue);
     expect(judge.bashAllow, ['sdd check']);
+    expect(judge.writeAllow, ['specs/*/review.md']);
     expect(bundle.skills.single.files.map((f) => f.relativePath), [
       'references/guide.md',
       'run.sh',
@@ -71,12 +72,18 @@ void main() {
       ..write(
         '.sdd/overrides/agents/bad.md',
         '---\ntier: huge\ntools: [read, fly, write]\nreadonly: true\n'
+            'write_allow: [x]\n'
             'bash_allow: [x]\nskills: [nope]\ntier_variants: [x]\n---\n',
       )
       ..write('.sdd/overrides/agents/Bad_Name.md', '---\n---\n')
       ..write('.sdd/overrides/agents/named.md', '---\nname: other\n---\n')
       ..write('.sdd/overrides/agents/ro.md', '---\nreadonly: sim\n---\n')
-      ..write('.sdd/overrides/agents/notools.md', '---\ntools: read\n---\n');
+      ..write('.sdd/overrides/agents/notools.md', '---\ntools: read\n---\n')
+      ..write(
+        '.sdd/overrides/agents/rw.md',
+        '---\ndescription: d\ntier: fast\ntools: [read]\n'
+            'write_allow: [x]\n---\n',
+      );
     final issues = issuesOf(project).join('\n');
     expect(issues, contains('"description" obrigatório'));
     expect(issues, contains('tier "huge" inválido'));
@@ -88,6 +95,7 @@ void main() {
     expect(issues, contains('name "other" difere do nome do arquivo'));
     expect(issues, contains('readonly deve ser booleano'));
     expect(issues, contains('"tools" deve ser lista de strings'));
+    expect(issues, contains('write_allow só faz sentido em agente readonly'));
   });
 
   test('valida skill que referencia inexistente', () {
