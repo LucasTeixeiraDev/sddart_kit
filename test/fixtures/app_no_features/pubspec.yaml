@@ -1,0 +1,6 @@
+name: app_no_features
+environment:
+  sdk: ^3.9.0
+dependencies:
+  flutter:
+    sdk: flutter

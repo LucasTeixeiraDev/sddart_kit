@@ -1,0 +1,19 @@
+
+┌─────────────────────────────────────────────────────────┐
+│ A new version of Flutter is available!                  │
+│                                                         │
+│ To update to the latest version, run "flutter upgrade". │
+└─────────────────────────────────────────────────────────┘
+Resolving dependencies...
+Downloading packages...
+  frontend_server_client 4.0.0 (4.1.0 available)
+Got dependencies!
+1 package has newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing lib...                                                
+
+warning • The value of the local variable 'x' isn't used. Try removing the variable or using it • lib/src/bad.dart:2:7 • unused_local_variable
+  error • A value of type 'String' can't be assigned to a variable of type 'int'. Try changing the type of the variable, or casting the right-hand type to 'int' • lib/src/bad.dart:2:11 • invalid_assignment
+  error • Undefined name 'undefinedThing'. Try correcting the name to one that is defined, or defining the name • lib/src/bad.dart:3:9 • undefined_identifier
+
+3 issues found. (ran in 0.2s)

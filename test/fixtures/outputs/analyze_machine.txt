@@ -1,0 +1,3 @@
+ERROR|COMPILE_TIME_ERROR|INVALID_ASSIGNMENT|<ROOT>/lib/src/bad.dart|2|11|3|A value of type 'String' can't be assigned to a variable of type 'int'.
+ERROR|COMPILE_TIME_ERROR|UNDEFINED_IDENTIFIER|<ROOT>/lib/src/bad.dart|3|9|14|Undefined name 'undefinedThing'.
+WARNING|STATIC_WARNING|UNUSED_LOCAL_VARIABLE|<ROOT>/lib/src/bad.dart|2|7|1|The value of the local variable 'x' isn't used.

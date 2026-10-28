@@ -1,0 +1,50 @@
+name: flutter-clean-cubit
+description: Clean architecture por feature, Cubit e Result (Ok/Err) com Failure selado.
+
+# Dependências que o conteúdo deste stack assume. O init avisa se faltarem.
+expected_dependencies: [flutter_bloc, bloc_test, mocktail]
+
+# Heurísticas usadas pelo `sdd init` para sugerir este stack.
+detect:
+  min_score: 3
+  signals:
+    - {dependency: flutter, score: 1}
+    - {dependency: flutter_bloc, score: 2}
+    - {dependency: bloc_test, score: 1}
+    - {path: lib/features, score: 1}
+
+# Gates que só entram no config se o projeto tiver a dependência indicada.
+gate_requirements:
+  custom_lint: custom_lint
+  dart_code_linter: dart_code_linter
+
+# Defaults do config.yaml para este stack (sobrescrevem os do core).
+config_defaults:
+  project:
+    features_path: lib/features
+    state_management: cubit
+    error_handling: result
+  commands:
+    custom_lint: dart run custom_lint
+    dart_code_linter: dart run dart_code_linter:metrics analyze lib
+  dod:
+    gates: [format, analyze, custom_lint, dart_code_linter, test, coverage, traceability]
+    coverage:
+      min: 80
+      paths:
+        - "lib/features/**/domain/**"
+        - "lib/features/**/presentation/**/cubit/**"
+    checklist:
+      - Nenhuma exception atravessa a fronteira do repository
+      - Erros não mapeados continuam chegando ao Crashlytics
+      - Failures de negócio do backend estão mapeados para Failures da feature
+  scaffold:
+    vars:
+      # Contrato assumido pelos bricks: sealed Result<T, E> com Ok(value) e Err(error).
+      result_import: "package:{package}/core/result/result.dart"
+  models:
+    deep: {default: opus, cursor: claude-opus-5-5}
+    standard: {default: sonnet, cursor: claude-sonnet-5}
+    # Haiku não está disponível de forma confiável para subagentes no Cursor
+    # (verificado em 2026-09-23); sonnet é o mais próximo confiável.
+    fast: {default: haiku, cursor: claude-sonnet-5}

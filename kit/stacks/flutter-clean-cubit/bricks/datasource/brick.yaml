@@ -1,0 +1,22 @@
+name: datasource
+description: "Datasource remoto (Dio): contrato, implementação e teste."
+version: 0.1.0+1
+environment:
+  mason: ">=0.1.0 <0.2.0"
+vars:
+  feature:
+    type: string
+    description: Nome da feature (ex. auth)
+    prompt: Feature?
+  name:
+    type: string
+    description: Nome base sem sufixo (padrão = feature; wallet → wallet_remote_data_source.dart)
+    default: "{feature}"
+  method:
+    type: string
+    description: Método inicial do contrato
+    default: fetch
+  ac:
+    type: string
+    description: Critério de aceite coberto pelos testes
+    default: AC-00
