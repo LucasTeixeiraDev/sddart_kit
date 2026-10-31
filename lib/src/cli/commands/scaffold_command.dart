@@ -2,6 +2,7 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_sdd/src/cli/sdd_command.dart';
 import 'package:flutter_sdd/src/core/project/project_info.dart';
 import 'package:flutter_sdd/src/core/scaffold/scaffold.dart';
+import 'package:flutter_sdd/src/core/tasks/task.dart';
 import 'package:flutter_sdd/src/infra/brick_generator.dart';
 import 'package:flutter_sdd/src/infra/exit_codes.dart';
 
@@ -13,7 +14,10 @@ class ScaffoldCommand extends SddCommand {
         help: 'Variáveis do brick (chave=valor; repetível).',
         splitCommas: false,
       )
-      ..addOption('task', help: 'Avisa se gerar arquivos fora dos owns.')
+      ..addOption(
+        'task',
+        help: 'Usa brick e brick_vars da tarefa e avisa saídas fora de owns.',
+      )
       ..addOption('spec', help: 'Spec da --task (se ambígua).');
   }
 
@@ -25,7 +29,9 @@ class ScaffoldCommand extends SddCommand {
       'Aplica um brick mason do stack (nunca sobrescreve arquivos).';
 
   @override
-  String get invocation => 'sdd scaffold <brick> [--vars chave=valor ...]';
+  String get invocation =>
+      'sdd scaffold <brick> [--vars chave=valor ...]\n'
+      '       sdd scaffold --task <id> [--spec <id>]';
 
   @override
   Future<int> run() async {
@@ -33,18 +39,22 @@ class ScaffoldCommand extends SddCommand {
     final project = await requireProject();
     final bundle = requireBundle(project);
     final available = bundle.bricks.map((b) => b.name).join(', ');
+    final task = _task();
+
     // Pares `chave=valor` soltos após o brick também valem como --vars
     // (forma comum em instruções escritas por LLMs).
     final names = rest.where((a) => !a.contains('=')).toList();
     final loosePairs = rest.where((a) => a.contains('='));
-    if (names.length != 1) {
-      throw UsageException('informe um brick ($available)', usage);
-    }
-    final brick = bundle.brick(names.single);
+    final brickName = switch (names) {
+      [final single] => single,
+      [] when task?.brick != null => task!.brick!,
+      _ => throw UsageException('informe um brick ($available)', usage),
+    };
+    final brick = bundle.brick(brickName);
     if (brick == null) {
       throw CliExit(
         ExitCodes.usage,
-        'brick "${names.single}" não existe (disponíveis: $available)',
+        'brick "$brickName" não existe (disponíveis: $available)',
       );
     }
 
@@ -53,23 +63,17 @@ class ScaffoldCommand extends SddCommand {
       final package = ProjectDetector(
         context.fs,
       ).detect(context.workingDirectory).name;
-      final config = project.config;
       vars = resolveBrickVars(
         brick,
         packageName: package,
-        configVars: {
-          'features_path': config.project.featuresPath,
-          // Caminho de import (sem `lib/`): package:<pkg>/<features_import>/...
-          'features_import': config.project.featuresPath.startsWith('lib/')
-              ? config.project.featuresPath.substring(4)
-              : config.project.featuresPath,
-          'test_path': config.project.testPath,
-          ...config.scaffoldVars,
+        configVars: scaffoldAutoVars(project.config),
+        cliVars: {
+          if (task?.brick == brick.name) ...task!.brickVars,
+          ...parseVarArgs([
+            ...argResults!['vars'] as List<String>,
+            ...loosePairs,
+          ]),
         },
-        cliVars: parseVarArgs([
-          ...argResults!['vars'] as List<String>,
-          ...loosePairs,
-        ]),
       );
     } on ScaffoldException catch (e) {
       throw CliExit(ExitCodes.usage, e.message);
@@ -85,24 +89,15 @@ class ScaffoldCommand extends SddCommand {
 
     await _tidy(files);
 
-    var outside = const <String>[];
-    final taskId = argResults!['task'] as String?;
-    if (taskId != null) {
-      final specArg = argResults!['spec'] as String?;
-      final spec = specArg == null
-          ? specs.list().map(specs.load).where((s) => s.task(taskId) != null)
-          : [specs.load(specs.resolve(specArg))];
-      final task = spec.map((s) => s.task(taskId)).nonNulls.firstOrNull;
-      if (task == null) {
-        throw CliExit(ExitCodes.usage, 'tarefa $taskId não encontrada');
-      }
-      outside = outsideOwns(
-        files
-            .where((f) => f.status != BrickFileStatus.skipped)
-            .map((f) => f.path),
-        task,
-      );
-    }
+    final outside = task == null
+        ? const <String>[]
+        : outsideOwns(
+            files
+                .where((f) => f.status != BrickFileStatus.skipped)
+                .map((f) => f.path)
+                .where((path) => !path.endsWith('.gitkeep')),
+            task,
+          );
 
     if (jsonOutput) {
       logger.json({
@@ -118,7 +113,7 @@ class ScaffoldCommand extends SddCommand {
         logger.info('${f.status.name.padRight(10)} ${f.path}');
       }
       for (final f in outside) {
-        logger.warn('$f fora dos owns de $taskId');
+        logger.warn('$f fora dos owns de ${task!.id}');
       }
       final created = files
           .where((f) => f.status == BrickFileStatus.created)
@@ -134,6 +129,25 @@ class ScaffoldCommand extends SddCommand {
       logger.info('${brick.name}: $created criados · $skipped mantidos');
     }
     return ExitCodes.ok;
+  }
+
+  /// Tarefa de `--task` (com `--spec`, ou a única spec que a contém).
+  TaskSpec? _task() {
+    final taskId = argResults!['task'] as String?;
+    if (taskId == null) return null;
+    final specArg = argResults!['spec'] as String?;
+    try {
+      final candidates = specArg == null
+          ? specs.list().map(specs.load).where((s) => s.task(taskId) != null)
+          : [specs.load(specs.resolve(specArg))];
+      final task = candidates.map((s) => s.task(taskId)).nonNulls.firstOrNull;
+      if (task == null) {
+        throw CliExit(ExitCodes.usage, 'tarefa $taskId não encontrada');
+      }
+      return task;
+    } on FormatException catch (e) {
+      throw CliExit(ExitCodes.usage, e.message);
+    }
   }
 
   /// Ordena imports e formata só os `.dart` criados agora: a ordem e a quebra

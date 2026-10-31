@@ -6,6 +6,7 @@ import 'package:flutter_sdd/src/core/kit/kit_locator.dart';
 import 'package:flutter_sdd/src/core/kit/kit_lock.dart';
 import 'package:flutter_sdd/src/core/kit/kit_model.dart';
 import 'package:flutter_sdd/src/core/kit/stack_definition.dart';
+import 'package:flutter_sdd/src/core/project/project_info.dart';
 import 'package:flutter_sdd/src/core/project/project_loader.dart';
 import 'package:flutter_sdd/src/core/project/sdd_paths.dart';
 import 'package:flutter_sdd/src/infra/process_runner.dart';
@@ -94,7 +95,9 @@ class Doctor {
       checks.add(DoctorCheck('stack', CheckStatus.fail, e.message));
       return checks;
     }
-    checks.add(DoctorCheck('stack', CheckStatus.ok, stack.name));
+    checks
+      ..add(DoctorCheck('stack', CheckStatus.ok, stack.name))
+      ..addAll(_expectedDependencies(root, stack));
 
     try {
       final result = parseConfig(source, stackDefaults: stack.configDefaults);
@@ -156,6 +159,31 @@ class Doctor {
     } on ProjectLoadException catch (e) {
       return DoctorCheck('sync', CheckStatus.fail, e.message);
     }
+  }
+
+  /// Dependências que o stack assume: só aviso, nunca falha.
+  List<DoctorCheck> _expectedDependencies(String root, StackDefinition stack) {
+    final ProjectInfo project;
+    try {
+      project = ProjectDetector(fs).detect(root);
+    } on ProjectDetectionException catch (e) {
+      return [DoctorCheck('deps', CheckStatus.warn, e.message)];
+    }
+    final missing = [
+      for (final dep in stack.expectedDependencies)
+        if (!project.dependsOn(dep)) dep,
+    ];
+    return [
+      if (missing.isEmpty)
+        const DoctorCheck('deps', CheckStatus.ok, 'dependências do stack ok')
+      else
+        DoctorCheck(
+          'deps',
+          CheckStatus.warn,
+          '${missing.join(', ')} ausente(s) no pubspec '
+              '(o stack ${stack.name} as assume)',
+        ),
+    ];
   }
 
   DoctorCheck _lock(SddPaths paths, KitLocation kit, String stack) {

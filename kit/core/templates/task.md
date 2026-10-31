@@ -10,7 +10,8 @@ owns:
 reads: []          # contratos que a tarefa lê (existem ou são owns de dependências)
 acceptance: []     # ACs da spec cobertos por testes desta tarefa
 # exemplar: lib/...  # opcional: arquivo existente a imitar
-# brick: failure     # opcional: só se TODOS os arquivos gerados estiverem em owns
+# brick: failure                 # opcional: esqueleto; a saída precisa estar em owns
+# brick_vars: {feature: wallet}   # obrigatório com brick (sdd scaffold --task <id>)
 ---
 ## Objetivo
 

@@ -6,6 +6,7 @@ depends_on: []
 tier: deep
 agent: implementer
 brick: failure
+brick_vars: {feature: wallet}
 owns:
   - lib/features/wallet/domain/failures/wallet_failure.dart
   - lib/features/wallet/domain/entities/wallet_balance.dart
@@ -21,11 +22,7 @@ acceptance: []
 Criar os contratos de domain da feature `wallet` contra os quais data, cubit e UI serão codificados.
 
 ## Detalhes
-Esqueleto: `sdd scaffold feature --vars feature=wallet name=wallet`, `sdd scaffold failure --vars feature=wallet name=wallet`,
-`sdd scaffold usecase --vars feature=wallet name=fetch_wallet_balance` e, se o brick `repository` gerar
-o contrato separado, use só a parte de domain (a impl é da T05). Domain é Dart puro (sem Flutter, sem Dio).
-Exemplos adicionais do mesmo padrão: `lib/features/profile/domain/usecases/fetch_profile_use_case.dart`
-e `lib/features/profile/domain/repositories/profile_repository.dart`.
+Esqueleto: `sdd scaffold --task T01` (failure); o resto segue o exemplar.
 
 Assinaturas exatas (plan.md · Domain):
 ```dart

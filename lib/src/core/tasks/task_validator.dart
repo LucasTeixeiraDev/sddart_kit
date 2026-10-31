@@ -3,6 +3,8 @@ import 'package:flutter_sdd/src/core/kit/kit_model.dart';
 import 'package:flutter_sdd/src/core/specs/spec_repository.dart';
 import 'package:flutter_sdd/src/core/status/spec_status.dart';
 import 'package:flutter_sdd/src/core/tasks/task.dart';
+import 'package:glob/glob.dart';
+import 'package:path/path.dart' as p;
 
 /// Resultado de `sdd tasks validate`.
 class ValidationResult {
@@ -21,6 +23,16 @@ class ValidationResult {
 List<String> specAcceptanceIds(String specMd, RegExp acPattern) =>
     acPattern.allMatches(specMd).map((m) => m.group(0)!).toSet().toList();
 
+/// Arquivos que o brick de uma tarefa geraria, ou o erro que impede saber.
+class BrickPlan {
+  const BrickPlan.paths(this.paths) : error = null;
+
+  const BrickPlan.error(this.error) : paths = const [];
+
+  final List<String> paths;
+  final String? error;
+}
+
 /// Valida o DAG de tarefas de uma spec.
 ///
 /// [exists] responde se um caminho relativo à raiz existe no projeto.
@@ -30,6 +42,7 @@ ValidationResult validateTasks(
   required SddConfig config,
   required bool Function(String path) exists,
   KitBundle? bundle,
+  BrickPlan Function(TaskSpec task)? brickPlanner,
 }) {
   final issues = <TaskIssue>[...spec.taskIssues];
   void error(TaskSpec t, String msg) =>
@@ -121,6 +134,25 @@ ValidationResult validateTasks(
             t,
             'escalonamento para ${escalate.name} sem variante em ${t.agent}',
           );
+        }
+      }
+    }
+  }
+
+  // Brick: os arquivos que ele geraria precisam estar nos owns (D-042).
+  if (brickPlanner != null) {
+    final generated = [
+      for (final g in config.project.generatedGlobs) Glob(g, context: p.posix),
+    ];
+    for (final t in tasks.where((t) => t.brick != null)) {
+      final plan = brickPlanner(t);
+      if (plan.error != null) {
+        error(t, 'brick ${t.brick}: ${plan.error}');
+        continue;
+      }
+      for (final path in plan.paths) {
+        if (!t.owns.contains(path) && !generated.any((g) => g.matches(path))) {
+          error(t, 'brick ${t.brick} geraria $path, fora de owns');
         }
       }
     }

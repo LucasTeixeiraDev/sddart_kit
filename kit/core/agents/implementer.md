@@ -13,7 +13,8 @@ Caminho do arquivo da tarefa. Leia só: a tarefa, os arquivos de `reads`, o `exe
 e os arquivos de `owns` que já existirem.
 
 ## Faça
-1. Se a tarefa tiver `brick`, rode `sdd scaffold <brick>` antes de escrever.
+1. Se a tarefa tiver `brick`, rode `sdd scaffold --task <id>` antes de escrever (só esqueleto;
+   assinaturas e estilo vêm do exemplar).
 2. Implemente seguindo o exemplar. Testes nomeados com a tag do AC (ex.: `[AC-02] ...`).
    Se a tarefa citar uma skill (`sdd-<nome>`), leia `{{sdd:skills_dir}}/sdd-<nome>/SKILL.md`.
 3. Rode `sdd check --task <id> --json` e corrija até passar. Falhas `owns` em arquivos que

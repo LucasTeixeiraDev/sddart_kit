@@ -140,12 +140,12 @@ void main() {
     expect(bundle.skills, hasLength(11));
     expect(bundle.rules, hasLength(5));
     expect(bundle.bricks.map((b) => b.name), [
-      'cubit',
-      'datasource',
+      'cubit-test',
       'failure',
       'feature',
-      'repository',
-      'usecase',
+      'repository-contract',
+      'repository-impl',
+      'repository-test',
     ]);
     expect(bundle.templates.keys, contains('agents-md-section.md'));
     // D-019: o stack estende agentes do core sem copiá-los.
@@ -156,10 +156,11 @@ void main() {
     expect(implementer.tierVariants, hasLength(3));
     expect(implementer.body, contains('## Stack flutter-clean-cubit'));
     expect(implementer.layer, KitLayer.stack);
-    final usecase = bundle.brick('usecase')!;
-    final repository = usecase.vars.firstWhere((v) => v.name == 'repository');
-    expect(repository.defaultValue, '{feature}');
-    expect(usecase.vars.firstWhere((v) => v.name == 'name').required, isTrue);
+    final contract = bundle.brick('repository-contract')!;
+    final name = contract.vars.firstWhere((v) => v.name == 'name');
+    expect(name.defaultValue, '{feature}');
+    final cubitTest = bundle.brick('cubit-test')!;
+    expect(cubitTest.vars.firstWhere((v) => v.name == 'name').required, isTrue);
     expect(bundle.brick('nope'), isNull);
   });
 
@@ -209,6 +210,9 @@ void main() {
       ..write('.sdd/overrides/bricks/ruim/__brick__/a.txt', 'x')
       ..write('.sdd/overrides/bricks/outro/brick.yaml', 'name: x')
       ..write('.sdd/overrides/bricks/outro/__brick__/a.txt', 'x')
+      ..write('.sdd/overrides/bricks/duas/brick.yaml', 'name: duas')
+      ..write('.sdd/overrides/bricks/duas/__brick__/lib/x/domain/a.dart', 'x')
+      ..write('.sdd/overrides/bricks/duas/__brick__/lib/x/data/b.dart', 'x')
       ..write('.sdd/overrides/bricks/vars/brick.yaml', 'name: vars\nvars: [1]')
       ..write('.sdd/overrides/bricks/vars/__brick__/a.txt', 'x');
     final issues = issuesOf(project).join('\n');
@@ -217,6 +221,10 @@ void main() {
     expect(issues, contains('ruim/brick.yaml: YAML inválido'));
     expect(issues, contains('outro/brick.yaml: "name" deve ser "outro"'));
     expect(issues, contains('"vars" deve ser mapa'));
+    expect(
+      issues,
+      contains('duas: brick gera mais de uma camada (data, domain)'),
+    );
   });
 
   test('brick válido de override com vars simples e tipadas', () {

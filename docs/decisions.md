@@ -367,3 +367,56 @@ template alterado entre dois syncs.
 **Decisão:** `dart_test.yaml` restringe os caminhos a `test/cli` e `test/core`. As fixtures
 de app (`test/fixtures/dogfood_app`) têm testes próprios que só rodam dentro do app.
 **Origem:** M7.
+
+## D-042 · Bricks de uma única camada, conferidos no validate (2026-10)
+**Decisão:**
+- **Regra geral:** cada brick gera arquivos de uma única camada (domain, data, presentation
+  ou test). Arquivos estruturais (`.gitkeep`) não contam. O `KitLoader` recusa o brick que
+  violar a regra, também em `.sdd/overrides/bricks/`.
+- **Repository:** o brick `repository` foi dividido em `repository-contract` (domain) e
+  `repository-impl` (data).
+- **Tarefas:** declaram `brick` + `brick_vars`. O `sdd tasks validate` calcula os caminhos que
+  o brick geraria (mesmas conversões de caixa do mason) e acusa erro para cada um fora de
+  `owns`, exceto `generated_globs`.
+- **Padrões:** `**/.gitkeep` entra nos `generated_globs` padrão.
+- **Scaffold:** `sdd scaffold --task <id>` usa `brick` e `brick_vars` da tarefa; `--vars`
+  sobrepõe.
+**Motivo:** dogfooding F7. O brick `repository` gerava contrato e implementação, que caem em
+ondas diferentes, e as saídas fora de `owns` só apareciam na execução.
+**Origem:** decisão 1 sobre as propostas do M7.
+
+## D-043 · Bricks só de esqueleto; exemplar primeiro (2026-10)
+**Decisão:** os bricks ficam:
+- `feature` (pastas);
+- `failure` (base selada + `UnexpectedFailure`);
+- `repository-contract` e `repository-impl` (classes vazias, D-042);
+- `repository-test` (captura do `FlutterError.onError`) e `cubit-test` (harness).
+
+Saem `datasource`, `usecase` e `cubit`, porque geravam assinaturas. Nenhum brick gera
+assinatura de método. A skill `task-breakdown`, o planner e o implementer priorizam o
+`exemplar`; o brick é opcional. Os 6 bricks foram validados num app Flutter real (analyze
+com very_good_analysis, format e testes verdes).
+**Motivo:** dogfooding F9/F10. As assinaturas genéricas eram reescritas pelos agentes, e o
+exemplar rendeu mais.
+**Origem:** decisão 2 sobre as propostas do M7. As decisões 1 e 2 foram aplicadas juntas:
+o par `repository-contract`/`repository-impl` também é só esqueleto.
+
+## D-044 · `meta` nas dependências esperadas do stack (2026-10)
+**Decisão:** `expected_dependencies` do `flutter-clean-cubit` inclui `meta`. Dependência
+esperada ausente é **aviso**, nunca erro: no `init` (notas) e no `doctor` (check `deps`).
+**Motivo:** dogfooding F11. very_good_analysis exige `@immutable` para igualdade por valor.
+**Origem:** decisão 3 sobre as propostas do M7.
+
+## D-045 · Régua de severidade do reviewer (2026-10)
+**Decisão:** o `sdd-reviewer` classifica por esta régua, com um exemplo de cada nível no
+prompt:
+- `blocker`: viola AC, item do DoD ou regra de arquitetura; quebra build ou gate.
+- `major`: comportamento incorreto fora dos ACs; falha de tratamento de erro; teste que passa
+  sem verificar de fato o AC.
+- `minor`: nome, estilo, estrutura ou duplicação de teste, legibilidade. Não gera tarefa de
+  correção.
+
+Na dúvida, o reviewer usa o nível menor e explica no achado. A skill `dod-check` e o
+`/sdd-review` seguem a mesma régua.
+**Motivo:** dogfooding F20. Um desvio só de teste foi tratado como major.
+**Origem:** decisão 4 sobre as propostas do M7.

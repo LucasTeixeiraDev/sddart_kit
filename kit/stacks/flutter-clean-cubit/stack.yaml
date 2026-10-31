@@ -1,8 +1,10 @@
 name: flutter-clean-cubit
 description: Clean architecture por feature, Cubit e Result (Ok/Err) com Failure selado.
 
-# Dependências que o conteúdo deste stack assume. O init avisa se faltarem.
-expected_dependencies: [flutter_bloc, bloc_test, mocktail]
+# Dependências que o conteúdo deste stack assume. O init e o doctor avisam
+# (sem erro) se faltarem. `meta`: @immutable para igualdade por valor com
+# very_good_analysis.
+expected_dependencies: [flutter_bloc, bloc_test, mocktail, meta]
 
 # Heurísticas usadas pelo `sdd init` para sugerir este stack.
 detect:

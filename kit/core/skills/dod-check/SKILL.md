@@ -12,7 +12,8 @@ Rode `sdd check --spec <id> --json`. Gates configurados:
 Para cada item, registre no `review.md` a evidência (`arquivo:linha` ou comando) ou o achado:
 {{sdd:dod_checklist}}
 
-## Severidades
-- `blocker`: AC não atendido, gate vermelho, violação de item do checklist.
-- `major`: desvio do plano ou de decisões sem justificativa, teste fraco para um AC.
-- `minor`: legibilidade, nomes, duplicação local.
+## Severidades (régua do reviewer)
+- `blocker`: viola AC, item do DoD ou regra de arquitetura; quebra build ou gate.
+- `major`: comportamento incorreto fora dos ACs; falha de tratamento de erro; teste que passa
+  sem verificar de fato o AC.
+- `minor`: nome, estilo, estrutura ou duplicação de teste, legibilidade (não gera correção).

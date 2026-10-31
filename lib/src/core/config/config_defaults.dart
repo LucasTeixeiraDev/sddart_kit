@@ -9,7 +9,12 @@ const Map<String, Object?> coreConfigDefaults = {
     'test_path': 'test',
     'state_management': 'none',
     'error_handling': 'exceptions',
-    'generated_globs': ['**/*.g.dart', '**/*.freezed.dart', '**/*.mocks.dart'],
+    'generated_globs': [
+      '**/*.g.dart',
+      '**/*.freezed.dart',
+      '**/*.mocks.dart',
+      '**/.gitkeep',
+    ],
   },
   'commands': {
     'format': 'dart format --output=none --set-exit-if-changed {files}',

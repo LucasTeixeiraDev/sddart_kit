@@ -97,6 +97,25 @@ void main() {
     expect(lock.toJson()['status'], 'warn');
   });
 
+  test('dependências esperadas do stack: aviso, ou ok', () async {
+    writeSdd('kit: {stack: flutter-clean-cubit}');
+    var checks = await run();
+    expect(checks['deps']!.status, CheckStatus.warn);
+    expect(checks['deps']!.message, contains('meta'));
+    final pubspec = fs.file('$memProjectPath/pubspec.yaml');
+    pubspec.writeAsStringSync(
+      pubspec.readAsStringSync().replaceFirst(
+        'dependencies:\n',
+        'dependencies:\n  meta: ^1.16.0\n',
+      ),
+    );
+    checks = await run();
+    expect(checks['deps']!.status, CheckStatus.ok);
+    pubspec.deleteSync();
+    checks = await run();
+    expect(checks['deps']!.message, contains('pubspec.yaml não encontrado'));
+  });
+
   test('lock ilegível e stack.yaml inválido', () async {
     writeSdd('kit: {stack: flutter-clean-cubit}', lock: 'x: [');
     expect((await run())['kit.lock']!.status, CheckStatus.fail);

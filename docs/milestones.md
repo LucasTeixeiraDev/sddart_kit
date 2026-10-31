@@ -77,7 +77,7 @@ Legenda: [x] feito · [ ] pendente. Detalhes das decisões em `decisions.md`.
 - [x] 225 testes; cobertura de `lib/src/core/` 99%
 
 ## Próximos passos (fora dos milestones)
-- [ ] Decidir as propostas abertas do dogfooding (F7, F9/F10, F11, F20)
+- [x] Propostas do dogfooding decididas e aplicadas: F7 (D-042), F9/F10 (D-043), F11 (D-044), F20 (D-045)
 - [ ] Kit embutido no binário AOT (D-001)
 - [ ] Validar o comando do `dart_code_linter`, o contrato do `Result` no app real e o uso no Cursor
 - [ ] LICENSE

@@ -34,7 +34,9 @@ void main() {
       final out = cli.out.toString();
       expect(out, contains('OK   config    válido'));
       expect(out, contains('OK   kit.lock  sdd $sddVersion'));
-      expect(out, contains('0 falhas · 0 avisos'));
+      // app_cubit não tem `meta`: aviso (não falha) do stack.
+      expect(out, contains('WARN deps      meta ausente(s) no pubspec'));
+      expect(out, contains('0 falhas · 1 avisos'));
     });
 
     test('sync pendente, sdd fora do PATH e kit inválido', () async {

@@ -148,6 +148,31 @@ void main() {
     );
   });
 
+  test('brick: saída fora de owns, gerados tolerados e erros de plano', () {
+    BrickPlan planner(TaskSpec t) => switch (t.id) {
+      'T01' => const BrickPlan.paths([
+        'lib/T01.dart',
+        'lib/a/.gitkeep',
+        'lib/fora.dart',
+      ]),
+      _ => const BrickPlan.error('faltam variáveis name'),
+    };
+    final r = validateTasks(
+      specWith([
+        task('T01', brick: 'b', acceptance: ['AC-01', 'AC-02']),
+        task('T02', brick: 'c'),
+        task('T03'),
+      ]),
+      config: testConfig('project: {generated_globs: ["**/.gitkeep"]}'),
+      exists: (_) => false,
+      brickPlanner: planner,
+    );
+    expect(errorsOf(r), [
+      'brick b geraria lib/fora.dart, fora de owns',
+      'brick c: faltam variáveis name',
+    ]);
+  });
+
   test('nenhuma tarefa', () {
     expect(errorsOf(validate([])), contains('nenhuma tarefa em tasks/'));
   });

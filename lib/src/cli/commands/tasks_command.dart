@@ -3,7 +3,9 @@ import 'package:file/file.dart';
 import 'package:flutter_sdd/src/cli/sdd_command.dart';
 import 'package:flutter_sdd/src/cli/sdd_context.dart';
 import 'package:flutter_sdd/src/core/kit/kit_model.dart';
+import 'package:flutter_sdd/src/core/project/project_info.dart';
 import 'package:flutter_sdd/src/core/project/project_loader.dart';
+import 'package:flutter_sdd/src/core/scaffold/scaffold.dart';
 import 'package:flutter_sdd/src/core/specs/spec_repository.dart';
 import 'package:flutter_sdd/src/core/tasks/scheduler.dart';
 import 'package:flutter_sdd/src/core/tasks/task_graph.dart';
@@ -35,10 +37,27 @@ mixin _TaskContext on SddCommand {
     project = await requireProject();
     bundle = requireBundle(project);
     spec = requireSpec();
+    String? package;
+    try {
+      package = ProjectDetector(
+        context.fs,
+      ).detect(context.workingDirectory).name;
+    } on ProjectDetectionException {
+      package = null;
+    }
     return validateTasks(
       spec,
       config: project.config,
       bundle: bundle,
+      brickPlanner: (task) => package == null
+          ? const BrickPlan.error('pubspec.yaml ausente')
+          : planTaskBrick(
+              fs: context.fs,
+              bundle: bundle,
+              config: project.config,
+              packageName: package,
+              task: task,
+            ),
       exists: (rel) =>
           context.fs.typeSync(p.join(context.workingDirectory, rel)) !=
           FileSystemEntityType.notFound,
