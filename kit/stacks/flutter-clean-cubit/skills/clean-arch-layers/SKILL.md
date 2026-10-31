@@ -22,5 +22,6 @@ Fluxo: `Cubit → UseCase → Repository (contrato) → RepositoryImpl → DataS
 - Com very_good_analysis, igualdade por valor (`==`/`hashCode`) exige `@immutable`
   (`package:meta` no pubspec); sem `meta`, prefira não sobrescrever `==` em entidades.
 - Testes espelham o caminho em `{{sdd:project.test_path}}/features/<feature>/...`.
-- Bricks: `feature` (pastas), `failure`, `usecase`, `repository`, `datasource`, `cubit`
-  (`sdd scaffold <brick> --vars feature=<f> --vars name=<n>`).
+- Bricks (só esqueleto, uma camada cada): `feature` (pastas), `failure` (base selada),
+  `repository-contract` (domain), `repository-impl` (data), `repository-test` e `cubit-test`
+  (harness). Assinaturas vêm do plano e do exemplar, nunca do brick.

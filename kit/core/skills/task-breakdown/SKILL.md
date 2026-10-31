@@ -14,10 +14,12 @@ description: Como quebrar um plano em tarefas contract-first com ondas, owns sem
 - 1 a ~5 arquivos em `owns` (incluindo o teste). Duas tarefas da mesma onda nunca possuem
   o mesmo arquivo.
 - `reads` mínimo: só contratos e arquivos realmente necessários.
-- `exemplar` sempre que houver um arquivo que já implementa o mesmo padrão.
-- `brick` só quando **todos** os arquivos que o brick gera estiverem em `owns` (um brick por
-  tarefa). Se o brick gerar arquivos de camadas de ondas diferentes, não o use: cite o
-  exemplar. Em `## Detalhes`, escreva o comando completo com `--vars` repetido.
+- **Exemplar primeiro:** indique `exemplar` sempre que houver um arquivo que já implementa o
+  mesmo padrão; é ele que guia assinaturas e estilo.
+- `brick` é só esqueleto (pastas, base selada, contrato/impl vazios, harness de teste) e é
+  opcional: use quando poupar boilerplate e declare `brick_vars` (ex.:
+  `{feature: wallet}`). O `sdd tasks validate` exige que tudo que o brick geraria esteja em
+  `owns`. O implementer roda `sdd scaffold --task <id>`. Cada brick gera uma única camada.
 - `acceptance`: ACs cobertos. Todo AC da spec deve aparecer em ao menos uma tarefa.
 
 ## Tarefas de correção (`Txx-fix-*`)

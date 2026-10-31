@@ -5,7 +5,8 @@ wave: 2
 depends_on: [T01, T02]
 tier: deep
 agent: implementer
-brick: repository
+brick: repository-impl
+brick_vars: {feature: wallet}
 owns:
   - lib/features/wallet/data/repositories/wallet_repository_impl.dart
   - test/features/wallet/data/repositories/wallet_repository_impl_test.dart
@@ -23,9 +24,7 @@ Implementar `WalletRepositoryImpl implements WalletRepository`, a fronteira que 
 datasource em `Result<WalletBalance, WalletFailure>` e nunca lança `Exception`.
 
 ## Detalhes
-Esqueleto: `sdd scaffold repository --vars feature=wallet name=wallet` (só a parte de data; o contrato é da T01).
-Teste exemplar: `test/features/profile/data/repositories/profile_repository_impl_test.dart`.
-Construtor: `const WalletRepositoryImpl(this._remote)` com `final WalletRemoteDataSource _remote;`.
+Esqueleto: `sdd scaffold --task T05` (repository-impl); siga o exemplar para os métodos.
 
 Mapeamento (plan.md · Data), capturando **só `Exception`**:
 

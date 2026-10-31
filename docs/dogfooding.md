@@ -52,7 +52,7 @@ orquestrador ficou pequeno: só os retornos de 4 linhas e o JSON do CLI.
 
 ## Atritos e ações
 
-Legenda: ✅ corrigido neste milestone · 📝 proposta (aguarda decisão).
+Legenda: ✅ corrigido. As 4 propostas iniciais foram decididas depois do M7 (D-042 a D-045).
 
 | # | Fase | Atrito | Ação |
 |---|---|---|---|
@@ -62,10 +62,10 @@ Legenda: ✅ corrigido neste milestone · 📝 proposta (aguarda decisão).
 | F4 | spec | DTO com `as` gera `TypeError` (um `Error`, não capturado), o que contradiz o fluxo de erro. | ✅ Skill `dio-datasource`: `fromJson` valida e lança `FormatException`. |
 | F5 | todas | Caminhos relativos sem dizer a raiz; formato de retorno sem caso de falha. | ✅ AGENTS.md: "relativos à raiz"; agentes com retorno de falha. |
 | F6 | spec | O template do plano não tinha seções de rastreabilidade nem de decisões para aprovação. | ✅ `## Testes (rastreabilidade)` e marcação `[aprovação]`. |
-| F7 | tasks | `brick` é um só por tarefa, e o `repository` gera contrato e implementação, que ficam em ondas diferentes. | ✅ A skill só usa brick se toda a saída estiver em `owns`. 📝 Dividir `repository` em `repository-contract` e `repository-impl`, ou aceitar lista de bricks. |
+| F7 | tasks | `brick` é um só por tarefa, e o `repository` gera contrato e implementação, que ficam em ondas diferentes. | ✅ `repository-contract` + `repository-impl`; cada brick gera uma camada; `tasks validate` confere a saída do brick contra `owns` (D-042). |
 | F8 | tasks | O template de tarefa não mostrava `exemplar` nem `brick`. | ✅ Campos opcionais comentados no template. |
-| F9/F10 | exec | Os bricks geram assinaturas genéricas (`Result<void>`, `fetch()`), e os agentes reescreveram quase tudo. | 📝 Variáveis de assinatura (`return_type`, `entity`) ou bricks menores. Hoje o exemplar rende mais que o brick. |
-| F11 | exec | very_good_analysis exige `@immutable` (`package:meta`) para igualdade por valor. | ✅ Orientação na skill. 📝 Incluir `meta` em `expected_dependencies` do stack. |
+| F9/F10 | exec | Os bricks geram assinaturas genéricas (`Result<void>`, `fetch()`), e os agentes reescreveram quase tudo. | ✅ Bricks reduzidos a esqueleto, sem assinaturas; exemplar primeiro (D-043). |
+| F11 | exec | very_good_analysis exige `@immutable` (`package:meta`) para igualdade por valor. | ✅ Orientação na skill e `meta` nas dependências esperadas, com aviso no `init`/`doctor` (D-044). |
 | F12 | exec | **Bug do kit:** a skill documentava `--vars a=1 b=2`, mas o CLI exigia `--vars` repetido. | ✅ Doc corrigida, e o CLI aceita pares `k=v` soltos após o brick. |
 | F13 | exec | Um arquivo sem dono na onda reprovava qualquer tarefa que rodasse `check` enquanto as outras ainda estavam em andamento. | ✅ Vira `INTF` enquanto houver tarefa da onda rodando e falha na rechecagem do fim da onda (D-038). Nota do gate: "N da tarefa · M no total". |
 | F14 | exec | Lints do very_good_analysis (`use_raw_strings` com `R$`, `cascade_invocations`) custaram ciclos. | ✅ Dicas na skill `bloc-testing`. |
@@ -74,7 +74,7 @@ Legenda: ✅ corrigido neste milestone · 📝 proposta (aguarda decisão).
 | F17 | review | O orquestrador (eu) escolheu para a `T08-fix` um exemplar que usava o padrão a corrigir. | ✅ A skill `task-breakdown` tem uma seção sobre tarefas de correção. |
 | F18 | close | **Bug do CLI:** templates em `.sdd/templates/` viravam conflito no `sync` quando o kit mudava. Uma correção do M3 nunca tinha sido aplicada. | ✅ `supportsMarker` exclui `.sdd/`, com teste de regressão (D-040). |
 | F19 | exec | O implementer se declarou `blocked` por um `owns` que não era seu. | ✅ Implementer: falha de `owns` em arquivos não tocados → `done` com nota. |
-| F20 | review | A severidade "desvio do plano = major" pegou um desvio só de teste. | 📝 Calibrar a skill `dod-check`: desvio que enfraquece a evidência de um AC é major; estilo é minor. |
+| F20 | review | A severidade "desvio do plano = major" pegou um desvio só de teste. | ✅ Régua de severidade com exemplos no reviewer; minor não gera correção (D-045). |
 
 ## Limites deste dogfooding
 

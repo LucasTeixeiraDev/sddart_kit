@@ -1,5 +1,9 @@
+import 'package:file/file.dart';
+import 'package:flutter_sdd/src/core/config/sdd_config.dart';
 import 'package:flutter_sdd/src/core/kit/kit_model.dart';
+import 'package:flutter_sdd/src/core/scaffold/brick_paths.dart';
 import 'package:flutter_sdd/src/core/tasks/task.dart';
+import 'package:flutter_sdd/src/core/tasks/task_validator.dart';
 
 class ScaffoldException implements Exception {
   const ScaffoldException(this.message);
@@ -89,3 +93,48 @@ List<String> outsideOwns(Iterable<String> generated, TaskSpec task) => [
   for (final path in generated)
     if (!task.owns.contains(path)) path,
 ];
+
+/// Variáveis automáticas de todo brick, derivadas do config. `package` vem do
+/// pubspec (em [resolveBrickVars]).
+Map<String, String> scaffoldAutoVars(SddConfig config) => {
+  'features_path': config.project.featuresPath,
+  // Caminho de import (sem `lib/`): package:<pkg>/<features_import>/...
+  'features_import': config.project.featuresPath.startsWith('lib/')
+      ? config.project.featuresPath.substring(4)
+      : config.project.featuresPath,
+  'test_path': config.project.testPath,
+  ...config.scaffoldVars,
+};
+
+/// Arquivos que o brick da tarefa geraria (para o `tasks validate`).
+BrickPlan planTaskBrick({
+  required FileSystem fs,
+  required KitBundle bundle,
+  required SddConfig config,
+  required String packageName,
+  required TaskSpec task,
+}) {
+  final brick = bundle.brick(task.brick!);
+  if (brick == null) {
+    return BrickPlan.error(
+      'não existe no kit (disponíveis: '
+      '${bundle.bricks.map((b) => b.name).join(', ')})',
+    );
+  }
+  try {
+    final vars = resolveBrickVars(
+      brick,
+      packageName: packageName,
+      configVars: scaffoldAutoVars(config),
+      cliVars: task.brickVars,
+    );
+    return BrickPlan.paths(brickOutputPaths(fs, brick, vars));
+  } on ScaffoldException catch (e) {
+    // O validate já prefixa "brick <nome>:"; evita repetir.
+    return BrickPlan.error(
+      e.message.split('\n').first.replaceFirst('brick ${brick.name}: ', ''),
+    );
+  } on FormatException catch (e) {
+    return BrickPlan.error(e.message);
+  }
+}

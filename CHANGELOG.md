@@ -1,6 +1,9 @@
 # Changelog
 
 ## 0.1.0 (em desenvolvimento)
+- Pós-M7: bricks só de esqueleto e de uma camada (`repository-contract`, `repository-impl`,
+  `repository-test`, `cubit-test`), `brick_vars` + checagem no `tasks validate`,
+  `sdd scaffold --task`, `meta` esperado no stack, régua de severidade do reviewer.
 - M7: dogfooding com fluxo completo; `write_allow` + `sdd hook guard-write` (reviewer grava
   só o `review.md`); arquivo sem dono vira interferência durante a onda; `scaffold` aceita
   pares `k=v` soltos; correção de conflito de templates no `sync`; ajustes de kit.

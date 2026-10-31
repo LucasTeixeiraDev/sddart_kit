@@ -23,6 +23,8 @@ TaskSpec task(
   List<String> reads = const [],
   String? exemplar,
   List<String> acceptance = const [],
+  String? brick,
+  Map<String, String> brickVars = const {},
 }) => TaskSpec(
   id: id,
   title: 'Tarefa $id',
@@ -33,6 +35,8 @@ TaskSpec task(
   owns: owns ?? ['lib/$id.dart'],
   reads: reads,
   exemplar: exemplar,
+  brick: brick,
+  brickVars: brickVars,
   acceptance: acceptance,
   file: 'specs/0001-x/tasks/$id-x.md',
 );

@@ -5,7 +5,6 @@ wave: 1
 depends_on: [T01]
 tier: deep
 agent: implementer
-brick: cubit
 owns:
   - lib/features/wallet/presentation/cubit/wallet_state.dart
   - lib/features/wallet/presentation/cubit/wallet_cubit.dart
@@ -23,8 +22,7 @@ Implementar o estado da tela de saldo: busca automática na criação e "Atualiz
 e é ignorado durante uma busca em andamento.
 
 ## Detalhes
-Leia a skill `sdd-cubit-patterns`. Esqueleto: `sdd scaffold cubit --vars feature=wallet name=wallet`.
-Teste exemplar: `test/features/profile/presentation/cubit/profile_cubit_test.dart`.
+Leia a skill `sdd-cubit-patterns` e siga o exemplar.
 
 Contratos (plan.md · Presentation):
 ```dart

@@ -5,7 +5,6 @@ wave: 1
 depends_on: [T01]
 tier: standard
 agent: implementer
-brick: datasource
 owns:
   - lib/features/wallet/data/models/wallet_balance_dto.dart
   - lib/features/wallet/data/datasources/wallet_remote_data_source.dart
@@ -21,8 +20,7 @@ Implementar o `WalletBalanceDto` (validação do corpo) e o `WalletRemoteDataSou
 distingue o 403 de carteira bloqueada.
 
 ## Detalhes
-Leia a skill `sdd-dio-datasource`. Esqueleto: `sdd scaffold datasource --vars feature=wallet name=wallet_remote`.
-Exemplo de DTO: `lib/features/profile/data/models/profile_dto.dart`.
+Leia a skill `sdd-dio-datasource` e siga o exemplar.
 
 Contratos (plan.md · Data):
 ```dart

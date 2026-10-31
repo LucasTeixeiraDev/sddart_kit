@@ -31,6 +31,22 @@ void main() {
     expect(t.file, 'specs/0001-x/tasks/T01-a.md');
   });
 
+  test('brick_vars', () {
+    final (t, issues) = parse(
+      taskMd(extra: 'brick: failure\nbrick_vars: {feature: wallet, n: 2}\n'),
+    );
+    expect(issues, isEmpty);
+    expect(t!.brickVars, {'feature': 'wallet', 'n': '2'});
+    expect(
+      errors(parse(taskMd(extra: 'brick_vars: {feature: x}\n')).$2),
+      contains('brick_vars exige brick'),
+    );
+    expect(
+      errors(parse(taskMd(extra: 'brick: f\nbrick_vars: [1]\n')).$2),
+      contains('brick_vars: esperado mapa de valores simples'),
+    );
+  });
+
   test('sem frontmatter ou id inválido', () {
     expect(errors(parse('## Objetivo').$2), ['frontmatter ausente']);
     expect(errors(parse('---\na: [\n---\n').$2).single, contains('inválido'));

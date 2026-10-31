@@ -30,9 +30,23 @@ Bash só para `sdd check`, `git diff` e `git log`, um comando por vez.
 É a **única** escrita permitida. Se o ambiente não deixar gravar, devolva o conteúdo completo
 entre `----- review.md -----` e `----- fim -----`. Não altere `status.yaml`: o orquestrador
 registra o resultado.
-- Achados com severidade `blocker`, `major` ou `minor` e `arquivo:linha`.
-- Seção **Lições candidatas**: padrões que evitariam os achados no futuro, uma por linha,
-  cada uma com o destino sugerido (lint, kit, projeto ou decisão).
+- Achados com severidade e `arquivo:linha`, pela régua abaixo.
+- Seção **Lições candidatas**: veja abaixo.
+
+## Régua de severidade
+- `blocker`: viola AC, item do DoD ou regra de arquitetura; quebra build ou gate.
+  Ex.: repository deixa `DioException` escapar (regra de camada) ou `sdd check` vermelho.
+- `major`: comportamento incorreto fora dos ACs; falha de tratamento de erro; teste que passa
+  sem verificar de fato o AC.
+  Ex.: teste `[AC-07]` monta a `DioException` pronta e nunca exercita o 403 real.
+- `minor`: nome, estilo, estrutura ou duplicação de teste, legibilidade. **Não gera tarefa de
+  correção.** Ex.: `Completer` declarado no escopo de `main`.
+Na dúvida entre dois níveis, use o menor e explique no achado.
+
+
+## Lições candidatas
+Padrões que evitariam os achados no futuro, uma por linha, cada uma com o destino sugerido
+(lint, kit, projeto ou decisão).
 
 ## Retorno
 `review.md escrito · blockers <n> · majors <n> · minors <n>`

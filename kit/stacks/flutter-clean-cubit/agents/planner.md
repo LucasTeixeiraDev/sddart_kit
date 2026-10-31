@@ -3,5 +3,6 @@ extend: true
 skills: [clean-arch-layers]
 ---
 ## Stack flutter-clean-cubit
-Indique `brick` quando houver (`failure`, `usecase`, `repository`, `datasource`, `cubit`) e, em
-`## Detalhes`, a skill a ler (`sdd-cubit-patterns`, `sdd-dio-datasource`) quando aplicável.
+Priorize `exemplar`. `brick` (com `brick_vars`) só para esqueleto: `failure`,
+`repository-contract`, `repository-impl`, `repository-test`, `cubit-test`. Em `## Detalhes`,
+cite a skill a ler (`sdd-cubit-patterns`, `sdd-dio-datasource`) quando aplicável.

@@ -3,6 +3,7 @@ import 'package:flutter_sdd/src/core/config/sdd_config.dart';
 import 'package:flutter_sdd/src/core/config/yaml_utils.dart';
 import 'package:flutter_sdd/src/core/kit/frontmatter.dart';
 import 'package:flutter_sdd/src/core/kit/kit_model.dart';
+import 'package:flutter_sdd/src/core/scaffold/brick_paths.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
@@ -171,7 +172,7 @@ class KitLoader {
         _issues.add('${yamlFile.path}: "vars" deve ser mapa');
         continue;
       }
-      into[name] = KitBrick(
+      final brick = KitBrick(
         name: name,
         description: '${raw['description'] ?? ''}',
         path: brickDir.path,
@@ -192,6 +193,16 @@ class KitLoader {
             ),
         ],
       );
+      // Regra geral: cada brick gera arquivos de uma única camada (D-042).
+      final layers = brickLayers(fs, brick);
+      if (layers.length > 1) {
+        _issues.add(
+          '${brickDir.path}: brick gera mais de uma camada '
+          '(${(layers.toList()..sort()).join(', ')})',
+        );
+        continue;
+      }
+      into[name] = brick;
     }
   }
 

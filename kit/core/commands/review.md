@@ -18,7 +18,7 @@ O argumento após o comando é o id da spec.
    - `sdd tasks validate <spec>`, `sdd status set <spec> phase exec` e volte ao `/sdd-exec`;
      depois, `/sdd-review` de novo.
 5. Sem blockers/majors: `sdd status set <spec> review approved blockers=0` e siga para
-   `/sdd-close`. Minors ficam registrados no `review.md` para o PR.
+   `/sdd-close`. Minors nunca geram tarefa de correção: ficam no `review.md` e no PR.
 
 Se o ambiente impedir o agente de gravar e ele devolver o conteúdo dos arquivos, grave-o
 você mesmo, sem alterar.

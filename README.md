@@ -28,6 +28,9 @@ Executável compilado (`dart compile exe bin/sdd.dart -o sdd`): aponte para o ki
 `--kit-path <dir>` ou `SDD_KIT_PATH=<repo>/kit`. A ordem de resolução é flag, depois
 variável de ambiente, depois o pacote instalado.
 
+> **Primeira vez?** Siga o [guia de uso](docs/guia.md): passo a passo do app do zero até o
+> primeiro PR, com exemplos de cada comando e do que ele retorna.
+
 ## Quickstart
 
 ```sh
@@ -61,7 +64,7 @@ de novo: ele continua da fase em que parou.
 | `sdd status set <spec> <alvo> <valor>` | **Única** forma de mudar `status.yaml`: `T03 done`, `gate plan_approved`, `phase exec`, `review approved blockers=0` |
 | `sdd check --task <id> [--spec <id>]` | format/analyze/test nos `owns` da tarefa + verificação de `owns` via git |
 | `sdd check [--spec <id>] [--max-lines N]` | DoD completo: gates de `dod.gates`, cobertura (lcov) e rastreabilidade de AC |
-| `sdd scaffold <brick> [--vars k=v ...] [--task <id>]` | Aplica um brick mason do stack (nunca sobrescreve) |
+| `sdd scaffold <brick> [--vars k=v ...]` · `sdd scaffold --task <id>` | Aplica um brick mason de esqueleto (com `--task`, usa `brick` e `brick_vars` da tarefa; nunca sobrescreve) |
 | `sdd import scan <caminho>` | Inventário somente leitura de agentes, skills, rules e comandos existentes |
 | `sdd doctor` | Ambiente (Flutter, Dart, git, `sdd` no PATH), config, `kit.lock` e sync em dia |
 | `sdd hook format\|guard-bash\|guard-write` | Hooks chamados pelos arquivos gerados (uso interno) |
@@ -118,7 +121,7 @@ project:
   features_path: lib/features
   test_path: test
   error_handling: result
-  generated_globs: ["**/*.g.dart", "**/*.freezed.dart", "**/*.mocks.dart"]
+  generated_globs: ["**/*.g.dart", "**/*.freezed.dart", "**/*.mocks.dart", "**/.gitkeep"]
 commands:                           # {files} recebe os arquivos no modo tarefa
   format: dart format --output=none --set-exit-if-changed {files}
   analyze: dart analyze --format=machine --fatal-infos {files}
@@ -229,16 +232,20 @@ Clean architecture por feature, Cubit e `Result` (Ok/Err) com Failure selado:
   `dio-datasource`.
 - **Rules:** uma por camada (domain, data, presentation, tests).
 - **Agentes:** extensões dos agentes do core.
-- **Bricks:**
+- **Bricks (só esqueleto, uma camada cada; nenhum gera assinatura de método):**
 
 ```sh
-sdd scaffold feature --vars feature=auth          # pastas das 3 camadas
-sdd scaffold failure --vars feature=auth          # sealed AuthFailure
-sdd scaffold datasource --vars feature=auth --vars method=login
-sdd scaffold repository --vars feature=auth --vars method=login --vars ac=AC-02
-sdd scaffold usecase --vars feature=auth --vars name=login
-sdd scaffold cubit --vars feature=auth --vars name=login
+sdd scaffold feature --vars feature=auth               # pastas das 3 camadas
+sdd scaffold failure --vars feature=auth               # sealed AuthFailure + Unexpected
+sdd scaffold repository-contract --vars feature=auth   # interface vazia (domain)
+sdd scaffold repository-impl --vars feature=auth       # classe vazia (data)
+sdd scaffold repository-test --vars feature=auth       # harness com captura do reporte
+sdd scaffold cubit-test --vars feature=auth --vars name=login
+sdd scaffold --task T03                                # brick e brick_vars da tarefa
 ```
+
+  Assinaturas e estilo vêm do `exemplar` da tarefa. O `sdd tasks validate` confere que tudo
+  que o brick de uma tarefa geraria está nos `owns` dela.
 
 - **Contrato do `Result`:** os bricks assumem `Result<T, E>` selado com `Ok(value)` e
   `Err(error)`, importado de `scaffold.vars.result_import`. Para outro contrato, sobrescreva
@@ -258,7 +265,7 @@ kit/stacks/<nome>/
 ```yaml
 name: meu-stack
 description: Uma linha.
-expected_dependencies: [flutter_riverpod]        # o init avisa se faltar
+expected_dependencies: [flutter_riverpod]        # init e doctor avisam se faltar
 detect:                                          # pontuação usada pelo init
   min_score: 3
   signals:
@@ -271,6 +278,8 @@ config_defaults:                                 # mesmo formato do config.yaml
 
 - **Formatos canônicos:**
   - agente: `description`, `tier`, `tools`, `readonly`, `skills`, `bash_allow`, `write_allow`;
+  - brick: `brick.yaml` + `__brick__/`, gerando arquivos de **uma única camada**
+    (`.gitkeep` não conta);
   - skill: `description` no `SKILL.md`;
   - rule: `description`, `globs`, `always`;
   - comando: `description`, `args`.

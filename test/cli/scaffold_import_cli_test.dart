@@ -81,11 +81,50 @@ void main() {
       expect(cli.out.toString(), contains('failure: 2 criados · 1 mantidos'));
     });
 
+    test('--task sem brick usa brick e brick_vars da tarefa', () async {
+      final generator = FakeBrickGenerator(const []);
+      final cli = await project(generator);
+      final t02 = cli.fs.file(
+        '$memProjectPath/specs/0001-login-biometria/tasks/T02-auth-repository-impl.md',
+      );
+      t02.writeAsStringSync(
+        t02.readAsStringSync().replaceFirst(
+          'agent: implementer',
+          'agent: implementer\nbrick: repository-impl\nbrick_vars: {feature: auth}',
+        ),
+      );
+      expect(await cli.run(['scaffold', '--task', 'T02']), ExitCodes.ok);
+      expect(generator.brickPath, endsWith('bricks/repository-impl'));
+      expect(generator.vars, containsPair('feature', 'auth'));
+      // --vars da linha de comando sobrepõe brick_vars.
+      expect(
+        await cli.run(['scaffold', '--task', 'T02', '--vars', 'name=outro']),
+        ExitCodes.ok,
+      );
+      expect(generator.vars, containsPair('name', 'outro'));
+      // validate confere a saída do brick contra owns (D-042).
+      expect(await cli.run(['tasks', 'validate', '1']), ExitCodes.failure);
+      expect(
+        cli.out.toString(),
+        contains(
+          'brick repository-impl geraria '
+          'lib/features/auth/data/repositories/auth_repository_impl.dart, '
+          'fora de owns',
+        ),
+      );
+    });
+
     test('pares chave=valor soltos após o brick valem como --vars', () async {
       final generator = FakeBrickGenerator(const []);
       final cli = await project(generator);
       expect(
-        await cli.run(['scaffold', 'usecase', '--vars', 'feature=a', 'name=b']),
+        await cli.run([
+          'scaffold',
+          'cubit-test',
+          '--vars',
+          'feature=a',
+          'name=b',
+        ]),
         ExitCodes.ok,
       );
       expect(generator.vars, containsPair('name', 'b'));
@@ -112,7 +151,7 @@ void main() {
         await cli.run([
           '--json',
           'scaffold',
-          'repository',
+          'repository-impl',
           '--vars',
           'feature=auth',
           '--task',
@@ -128,7 +167,7 @@ void main() {
       expect(
         await cli.run([
           'scaffold',
-          'repository',
+          'repository-impl',
           '--vars',
           'feature=auth',
           '--task',
@@ -145,15 +184,16 @@ void main() {
       final cli = await project(FakeBrickGenerator(const []));
       expect(await cli.run(['scaffold']), ExitCodes.usage);
       expect(await cli.run(['scaffold', 'nope']), ExitCodes.usage);
-      expect(cli.err.toString(), contains('disponíveis: cubit, datasource'));
-      expect(await cli.run(['scaffold', 'usecase']), ExitCodes.usage);
+      expect(cli.err.toString(), contains('disponíveis: cubit-test, failure'));
+      expect(await cli.run(['scaffold', 'cubit-test']), ExitCodes.usage);
       expect(cli.err.toString(), contains('faltam variáveis feature'));
+      expect(await cli.run(['scaffold']), ExitCodes.usage);
       expect(
         await cli.run(['scaffold', 'failure', '--vars', 'x']),
         ExitCodes.usage,
       );
       expect(
-        await cli.run(['scaffold', 'failure', 'usecase']),
+        await cli.run(['scaffold', 'failure', 'cubit-test']),
         ExitCodes.usage,
       );
       expect(

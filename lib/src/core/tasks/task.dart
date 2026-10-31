@@ -16,6 +16,7 @@ class TaskSpec {
     this.reads = const [],
     this.exemplar,
     this.brick,
+    this.brickVars = const {},
     this.acceptance = const [],
     this.body = '',
   });
@@ -32,6 +33,10 @@ class TaskSpec {
   final List<String> reads;
   final String? exemplar;
   final String? brick;
+
+  /// Variáveis do brick (`brick_vars`), usadas por `sdd scaffold --task` e
+  /// pelo `tasks validate` para prever os arquivos gerados.
+  final Map<String, String> brickVars;
   final List<String> acceptance;
   final String body;
 
@@ -73,6 +78,7 @@ const _knownKeys = {
   'reads',
   'exemplar',
   'brick',
+  'brick_vars',
   'acceptance',
 };
 
@@ -177,6 +183,17 @@ TaskSpec? parseTask(String source, String file, List<TaskIssue> issues) {
     error('exemplar: caminho deve ser relativo à raiz, sem ".."', task: id);
   }
   final brick = string('brick');
+  final brickVarsRaw = data['brick_vars'] ?? const <String, Object?>{};
+  final brickVars = <String, String>{};
+  if (brickVarsRaw is Map<String, Object?> &&
+      brickVarsRaw.values.every((v) => v is String || v is num || v is bool)) {
+    brickVarsRaw.forEach((k, v) => brickVars[k] = '$v');
+  } else {
+    error('brick_vars: esperado mapa de valores simples', task: id);
+  }
+  if (brickVars.isNotEmpty && brick == null) {
+    error('brick_vars exige brick', task: id);
+  }
   final acceptance = list('acceptance');
 
   for (final section in requiredSections) {
@@ -213,6 +230,7 @@ TaskSpec? parseTask(String source, String file, List<TaskIssue> issues) {
     dependsOn: dependsOn,
     exemplar: exemplar,
     brick: brick,
+    brickVars: brickVars,
     acceptance: acceptance,
     body: doc.body,
     file: file,
